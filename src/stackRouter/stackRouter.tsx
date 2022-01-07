@@ -10,9 +10,13 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Menu" component={MenuScreen} />
+        <Stack.Screen
+          name="Menu"
+          component={MenuScreen}
+          options={{ headerShown: true, animation: 'simple_push' }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
