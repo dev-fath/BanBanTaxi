@@ -131,11 +131,11 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.banbantaxi"
+        applicationId "com.humaxmobility.BanBanTaxi"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 0000001
+        versionName "0.0.1"
     }
     splits {
         abi {
