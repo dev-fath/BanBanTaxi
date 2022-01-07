@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "ios": "npm run pod:install && react-native run-ios",
     "start": "react-native start",
+    "pod:install": "npm run pod:clean && cd ios && pod install && cd ../",
+    "pod:clean": "cd ios && pod cache clean --all && cd ../",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --check ./src"
@@ -16,6 +18,7 @@
     "@react-navigation/drawer": "^6.1.8",
     "@react-navigation/material-bottom-tabs": "^6.0.9",
     "@react-navigation/native": "^6.0.6",
+    "@react-navigation/native-stack": "^6.2.5",
     "@react-navigation/stack": "^6.0.11",
     "react": "17.0.2",
     "react-native": "0.66.4",
