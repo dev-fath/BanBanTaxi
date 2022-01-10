@@ -8,7 +8,11 @@ import { useState } from 'react';
 import { Coord } from 'react-native-nmap/index';
 
 function HomeScreen({ navigation }: IDefaultScreenProps) {
-  const [directions, setDirections] = useState<Coord[]>([]);
+  //TODO : 내 현재 위치 가져오기
+  const [directions, setDirections] = useState<Coord[]>([
+    { latitude: 0, longitude: 0 },
+    { latitude: 0, longitude: 0 },
+  ]);
   return (
     <SafeAreaView style={{ width: '100%', height: '100%' }}>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
