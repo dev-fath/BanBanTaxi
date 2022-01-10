@@ -1,9 +1,10 @@
 import React from 'react';
 
-import { Button, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { getDirections } from '../services/apiService';
 import { IGeoPosition } from '../interfaces/geoPosition.interface';
 import { Coord } from 'react-native-nmap/index';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const JourneySettingComponent = (props: { setDirections: (directions: Coord[]) => void }) => {
   const directionsArrayToCoord = (directionArray: null | [[number, number]]) => {
@@ -25,21 +26,76 @@ const JourneySettingComponent = (props: { setDirections: (directions: Coord[]) =
     });
   };
   return (
-    <View
-      style={{
-        position: 'relative',
-      }}>
-      <Text
-        style={{
-          fontSize: 24,
-        }}>
-        test
-      </Text>
-      <Button onPress={handleClickButton} title={'경로 찾기'}>
-        경로 찾기
-      </Button>
+    <View style={styles.container}>
+      <View style={styles.wrapper}>
+        <TouchableOpacity style={styles.sourceButton}>
+          <Text style={styles.sourceButtonText}>[현위치] 휴맥스빌리지</Text>
+          <Icon name={'locate-outline'} size={18} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.destinationButton} onPress={handleClickButton}>
+          <Text style={styles.destinationButtonText}>어디로 모실까요?</Text>
+          <Icon style={styles.destinationButtonIcon} name={'arrow-forward-outline'} size={18} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    minHeight: 150,
+    height: '30%',
+    paddingLeft: 24,
+    paddingRight: 24,
+    backgroundColor: 'white',
+    borderTopRightRadius: 50,
+    borderTopLeftRadius: 50,
+    borderTopStartRadius: 50,
+    borderTopEndRadius: 50,
+  },
+  wrapper: {
+    display: 'flex',
+    width: '100%',
+    height: '100%',
+    flexDirection: 'column',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sourceButton: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    paddingLeft: 16,
+    paddingRight: 16,
+    height: 56,
+  },
+  sourceButtonText: {
+    fontSize: 18,
+  },
+  destinationButton: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    paddingLeft: 16,
+    paddingRight: 16,
+    backgroundColor: 'black',
+    height: 56,
+  },
+  destinationButtonText: {
+    fontSize: 18,
+    color: '#00FF00',
+  },
+  destinationButtonIcon: {
+    color: '#00FF00',
+  },
+});
 
 export default JourneySettingComponent;

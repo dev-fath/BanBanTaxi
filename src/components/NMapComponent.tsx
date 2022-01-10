@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import NaverMapView, { Circle, Marker, Path, Polyline, Polygon, Coord } from 'react-native-nmap';
+import NaverMapView, { Coord, Gravity, Marker, Path } from 'react-native-nmap';
 import { Platform } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 
@@ -14,11 +14,13 @@ function BanBanMap(props: { directions: Coord[] }) {
   }, []);
   return (
     <NaverMapView
-      style={{ width: '100%', height: '100%' }}
+      style={{ width: '100%', height: '80%', position: 'absolute', top: 0 }}
       zoomControl={true}
       maxZoomLevel={20}
       minZoomLevel={7}
       showsMyLocationButton={true}
+      logoGravity={Gravity.NO_GRAVITY}
+      mapPadding={{ bottom: 64 }}
       center={{ ...P0, zoom: 16 }}
       onCameraChange={(e) => console.warn('onCameraChange', JSON.stringify(e))}
       onMapClick={(e) => console.warn('onMapClick', JSON.stringify(e))}>
