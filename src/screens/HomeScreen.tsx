@@ -1,37 +1,15 @@
 import * as React from 'react';
-import { View, TouchableOpacity, SafeAreaView } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { DefaultScreenNavigationProp, DefaultScreenRouteProp } from '../@types/screenTypes';
+import { View, SafeAreaView } from 'react-native';
 import BanBanMap from '../components/NMapComponent';
+import { IDefaultScreenProps } from '../interfaces/defaultScreenProps';
+import MenuButton from '../components/MenuButton';
 
-interface IDefaultScreenProps {
-  route?: DefaultScreenRouteProp;
-  navigation: DefaultScreenNavigationProp;
-}
 function HomeScreen({ navigation }: IDefaultScreenProps) {
   return (
     <SafeAreaView style={{ width: '100%', height: '100%' }}>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <BanBanMap />
-        <TouchableOpacity
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'absolute',
-            borderColor: 'black',
-            borderStyle: 'solid',
-            borderRadius: 50,
-            width: 50,
-            height: 50,
-            borderWidth: 2,
-            top: 16,
-            left: 16,
-            backgroundColor: '#ccc',
-          }}
-          onPress={() => navigation.navigate('Menu')}>
-          <Icon name="grid-outline" size={25} />
-        </TouchableOpacity>
+        <MenuButton navigation={navigation} />
       </View>
     </SafeAreaView>
   );
