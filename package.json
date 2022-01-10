@@ -5,9 +5,11 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "npm run pod:install && react-native run-ios",
+    "build:ios": "npm run pod:install",
     "start": "react-native start",
     "pod:install": "npm run pod:clean && cd ios && pod install && cd ../",
     "pod:clean": "cd ios && pod cache clean --all && cd ../",
+    "pod:remove:all": "rm -rf ./ios/Pods/",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --check ./src"
