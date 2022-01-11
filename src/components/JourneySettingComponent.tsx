@@ -5,6 +5,8 @@ import { getDirections } from '../services/apiService';
 import { IGeoPosition } from '../interfaces/geoPosition.interface';
 import { Coord } from 'react-native-nmap/index';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useDispatch, useSelector } from 'react-redux';
+import { AddressState, findDestination, findSource } from '../redux/addressFind/addressFindSlice';
 
 const JourneySettingComponent = (props: { setDirections: (directions: Coord[]) => void }) => {
   const directionsArrayToCoord = (directionArray: null | [[number, number]]) => {
@@ -16,6 +18,7 @@ const JourneySettingComponent = (props: { setDirections: (directions: Coord[]) =
       return { latitude: direction[1], longitude: direction[0] } as Coord;
     });
   };
+
   const start: IGeoPosition = { lat: 37.379024, lon: 127.113128 };
   const goal: IGeoPosition = { lat: 37.379213, lon: 126.99937 };
   const url = 'https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving';
@@ -25,14 +28,30 @@ const JourneySettingComponent = (props: { setDirections: (directions: Coord[]) =
       props.setDirections(directionCoords);
     });
   };
+  const dispatch = useDispatch();
+  const findState: boolean = useSelector<AddressState, boolean>((state) => state.isFindSource);
+
   return (
     <View style={styles.container}>
       <View style={styles.wrapper}>
-        <TouchableOpacity style={styles.sourceButton}>
-          <Text style={styles.sourceButtonText}>[현위치] 휴맥스빌리지</Text>
+        <TouchableOpacity
+          style={styles.sourceButton}
+          onPress={() => {
+            dispatch(findSource(true));
+            console.log('출발지 선택 화면으로 이동(?)');
+            console.log('출발지 선택 UI 나타내기(?)');
+          }}>
+          <Text style={styles.sourceButtonText}>[현위치] 휴맥스빌리지 {findState}</Text>
           <Icon name={'locate-outline'} size={18} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.destinationButton} onPress={handleClickButton}>
+        <TouchableOpacity
+          style={styles.destinationButton}
+          onPress={() => {
+            dispatch(findDestination(true));
+            console.log('목적지 선택 화면으로 이동(?)');
+            console.log('목적지 선택 UI 나타내기(?)');
+            // handleClickButton
+          }}>
           <Text style={styles.destinationButtonText}>어디로 모실까요?</Text>
           <Icon style={styles.destinationButtonIcon} name={'arrow-forward-outline'} size={18} />
         </TouchableOpacity>

@@ -6,6 +6,8 @@ import MenuButton from '../components/MenuButton';
 import JourneySettingComponent from '../components/JourneySettingComponent';
 import { useState } from 'react';
 import { Coord } from 'react-native-nmap/index';
+import { Provider } from 'react-redux';
+import { addressFindStore } from '../redux/addressFind/addressFindStore';
 
 function HomeScreen({ navigation }: IDefaultScreenProps) {
   //TODO : 내 현재 위치 가져오기
@@ -18,7 +20,9 @@ function HomeScreen({ navigation }: IDefaultScreenProps) {
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <BanBanMap directions={directions} />
         <MenuButton navigation={navigation} />
-        <JourneySettingComponent setDirections={setDirections} />
+        <Provider store={addressFindStore}>
+          <JourneySettingComponent setDirections={setDirections} />
+        </Provider>
       </View>
     </SafeAreaView>
   );
