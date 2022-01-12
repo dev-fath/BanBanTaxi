@@ -1,12 +1,13 @@
 import React from 'react';
 
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { getDirections } from '../services/apiService';
+import { getDirections, loadGeocode } from '../services/apiService';
 import { IGeoPosition } from '../interfaces/geoPosition.interface';
 import { Coord } from 'react-native-nmap/index';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AddressState, findDestination, findSource } from '../redux/addressFind/addressFindSlice';
+import { IGeocodeResponse } from '../interfaces/geocodeResponse';
 
 const JourneySettingComponent = (props: { setDirections: (directions: Coord[]) => void }) => {
   const directionsArrayToCoord = (directionArray: null | [[number, number]]) => {
@@ -38,6 +39,8 @@ const JourneySettingComponent = (props: { setDirections: (directions: Coord[]) =
           style={styles.sourceButton}
           onPress={() => {
             dispatch(findSource(true));
+            console.log(geocode());
+            // dispatch(sourceAddress('회안대로 350-25'));
             console.log('출발지 선택 화면으로 이동(?)');
             console.log('출발지 선택 UI 나타내기(?)');
           }}>
@@ -58,6 +61,16 @@ const JourneySettingComponent = (props: { setDirections: (directions: Coord[]) =
       </View>
     </View>
   );
+};
+
+const geocode = () => {
+  return loadGeocode({ query: '회안대로 350', count: 10 })
+    .then<IGeocodeResponse>((res) => {
+      return res.json();
+    })
+    .then((obj) => {
+      return obj;
+    });
 };
 
 const styles = StyleSheet.create({

@@ -1,16 +1,12 @@
 import React, { useEffect } from 'react';
 import NaverMapView, { Coord, Gravity, Marker, Path } from 'react-native-nmap';
-import { Platform } from 'react-native';
-import Geolocation from 'react-native-geolocation-service';
 
 function BanBanMap(props: { directions: Coord[] }) {
   const P0 = { latitude: 37.379024, longitude: 127.113128 };
   const P1 = { latitude: 37.378512, longitude: 127.001234 };
   const P2 = { latitude: 37.378256, longitude: 127.113256 };
   useEffect(() => {
-    if (Platform.OS === 'ios') {
-      void Geolocation.requestAuthorization('always');
-    }
+    console.log('test');
   }, []);
   return (
     <NaverMapView
@@ -31,6 +27,7 @@ function BanBanMap(props: { directions: Coord[] }) {
         coordinates={props.directions}
         onClick={() => console.warn('onClick! path')}
         width={10}
+        color={'#00FF00'}
       />
       {/*<Polyline coordinates={[P1, P2]} onClick={() => console.warn('onClick! polyline')} />*/}
       {/*<Circle*/}
