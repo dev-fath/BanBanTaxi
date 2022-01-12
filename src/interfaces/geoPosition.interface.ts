@@ -1,7 +1,3 @@
-export interface IGeoPosition {
-  lat: number;
-  lon: number;
-}
 
 export interface IDirectionResponse {
   code: number;

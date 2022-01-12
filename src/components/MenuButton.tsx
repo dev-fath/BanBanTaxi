@@ -2,12 +2,15 @@ import { TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import React from 'react';
 import { IDefaultScreenProps } from '../interfaces/defaultScreenProps';
+import { useSelector } from 'react-redux';
+import { AddressState } from '../redux/addressFind/addressFindStore';
 
 const MenuButton = ({ navigation }: IDefaultScreenProps) => {
+  const findState: boolean = useSelector<AddressState, boolean>((state) => state.isFindSource);
   return (
     <TouchableOpacity
       style={{
-        display: 'flex',
+        display: findState ? 'none' : 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         position: 'absolute',
