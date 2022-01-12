@@ -1,5 +1,6 @@
-import { IDirectionResponse, IGeoPosition, OptionCode } from '../interfaces/geoPosition.interface';
+import { IDirectionResponse, OptionCode } from '../interfaces/geoPosition.interface';
 import { paramsToQueryString } from '../utils/paramsToQueryString';
+import { Coord } from 'react-native-nmap';
 
 const nmapKeyId = 'gudascnpd4';
 const nmapKey = 'sMXN9pmM2HJVr0GHQAIbkvkIjKqfZ8yn8HKIvUHd';
@@ -13,12 +14,12 @@ const enum httpMethods {
 
 export function getDirections(
   url = 'https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving',
-  start: IGeoPosition,
-  goal: IGeoPosition,
+  start: Coord,
+  goal: Coord,
   searchOption: OptionCode = OptionCode.traoptimal,
 ) {
   return fetch(
-    `${url}?start=${start.lon},${start.lat}&goal=${goal.lon},${goal.lat}&option=${searchOption}`,
+    `${url}?start=${start.longitude},${start.latitude}&goal=${goal.longitude},${goal.latitude}&option=${searchOption}`,
     {
       method: httpMethods.GET,
       mode: 'cors',

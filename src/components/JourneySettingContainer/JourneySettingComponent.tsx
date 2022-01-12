@@ -1,15 +1,19 @@
 import React from 'react';
 
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { getDirections, loadGeocode } from '../services/apiService';
-import { IGeoPosition } from '../interfaces/geoPosition.interface';
+import { getDirections, loadGeocode } from '../../services/apiService';
 import { Coord } from 'react-native-nmap/index';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
-import { AddressState, findDestination, findSource } from '../redux/addressFind/addressFindSlice';
-import { IGeocodeResponse } from '../interfaces/geocodeResponse';
+import {
+  AddressStateReducers,
+  direction,
+  findDestination,
+  findSource,
+} from '../../redux/addressFind/addressFindSlice';
+import { IGeocodeResponse } from '../../interfaces/geocodeResponse';
 
-const JourneySettingComponent = (props: { setDirections: (directions: Coord[]) => void }) => {
+const JourneySettingComponent = () => {
   const directionsArrayToCoord = (directionArray: null | [[number, number]]) => {
     if (!directionArray) {
       console.warn('null direction');
@@ -20,17 +24,19 @@ const JourneySettingComponent = (props: { setDirections: (directions: Coord[]) =
     });
   };
 
-  const start: IGeoPosition = { lat: 37.379024, lon: 127.113128 };
-  const goal: IGeoPosition = { lat: 37.379213, lon: 126.99937 };
+  const dispatch = useDispatch();
+  const start: Coord = { latitude: 37.379024, longitude: 127.113128 };
+  const goal: Coord = { latitude: 37.379213, longitude: 126.99937 };
   const url = 'https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving';
   const handleClickButton = (e: { preventDefault: () => void }) => {
     return getDirections(url, start, goal).then((result) => {
       const directionCoords: Coord[] = directionsArrayToCoord(result);
-      props.setDirections(directionCoords);
+      dispatch(direction(directionCoords));
     });
   };
-  const dispatch = useDispatch();
-  const findState: boolean = useSelector<AddressState, boolean>((state) => state.isFindSource);
+  const findState: boolean = useSelector<AddressStateReducers, boolean>(
+    (state) => state.isFindSource,
+  );
 
   return (
     <View style={styles.container}>

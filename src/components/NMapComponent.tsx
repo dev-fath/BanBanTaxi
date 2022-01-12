@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
-import NaverMapView, { Coord, Gravity, Marker, Path } from 'react-native-nmap';
+import NaverMapView, { Gravity, Marker, Path } from 'react-native-nmap';
+import { useSelector } from 'react-redux';
+import { AddressState } from '../redux/addressFind/addressFindStore';
 
-function BanBanMap(props: { directions: Coord[] }) {
+function BanBanMap() {
+  const direction = useSelector((state: AddressState) => state.direction);
   const P0 = { latitude: 37.379024, longitude: 127.113128 };
   const P1 = { latitude: 37.378512, longitude: 127.001234 };
   const P2 = { latitude: 37.378256, longitude: 127.113256 };
@@ -24,7 +27,7 @@ function BanBanMap(props: { directions: Coord[] }) {
       <Marker coordinate={P1} pinColor="blue" onClick={() => console.warn('onClick! p1')} />
       <Marker coordinate={P2} pinColor="red" onClick={() => console.warn('onClick! p2')} />
       <Path
-        coordinates={props.directions}
+        coordinates={direction}
         onClick={() => console.warn('onClick! path')}
         width={10}
         color={'#00FF00'}
