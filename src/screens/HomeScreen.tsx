@@ -5,7 +5,7 @@ import { IDefaultScreenProps } from '../interfaces/defaultScreenProps';
 import MenuButton from '../components/MenuButton';
 import { Provider } from 'react-redux';
 import { addressFindStore } from '../redux/addressFind/addressFindStore';
-import JourneySettingContainer from '../components/JourneySettingContainer/JourneySettingContainer';
+import JourneySettingComponent from '../components/JourneySettingContainer/JourneySettingComponent';
 
 function HomeScreen({ navigation }: IDefaultScreenProps) {
   //TODO : 내 현재 위치 가져오기
@@ -15,7 +15,7 @@ function HomeScreen({ navigation }: IDefaultScreenProps) {
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <BanBanMap />
           <MenuButton navigation={navigation} />
-          <JourneySettingContainer />
+          <JourneySettingComponent navigation={navigation} />
         </View>
       </Provider>
     </SafeAreaView>
