@@ -12,8 +12,9 @@ import {
   findSource,
 } from '../../redux/addressFind/addressFindSlice';
 import { IGeocodeResponse } from '../../interfaces/geocodeResponse';
+import { IDefaultScreenProps } from '../../interfaces/defaultScreenProps';
 
-const JourneySettingComponent = () => {
+const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
   const directionsArrayToCoord = (directionArray: null | [[number, number]]) => {
     if (!directionArray) {
       console.warn('null direction');
@@ -23,11 +24,11 @@ const JourneySettingComponent = () => {
       return { latitude: direction[1], longitude: direction[0] } as Coord;
     });
   };
-
-  const dispatch = useDispatch();
   const start: Coord = { latitude: 37.379024, longitude: 127.113128 };
   const goal: Coord = { latitude: 37.379213, longitude: 126.99937 };
   const url = 'https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving';
+
+  const dispatch = useDispatch();
   const handleClickButton = (e: { preventDefault: () => void }) => {
     return getDirections(url, start, goal).then((result) => {
       const directionCoords: Coord[] = directionsArrayToCoord(result);
@@ -44,6 +45,7 @@ const JourneySettingComponent = () => {
         <TouchableOpacity
           style={styles.sourceButton}
           onPress={() => {
+            navigation.navigate('FindAddressNavigator');
             dispatch(findSource(true));
             console.log(geocode());
             // dispatch(sourceAddress('회안대로 350-25'));
@@ -70,7 +72,7 @@ const JourneySettingComponent = () => {
 };
 
 const geocode = () => {
-  return loadGeocode({ query: '회안대로 350', count: 10 })
+  return loadGeocode({ query: '회안대로 ', count: 10, coordinate: '127.2359831,37.3839480' })
     .then<IGeocodeResponse>((res) => {
       return res.json();
     })
