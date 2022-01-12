@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { TouchableOpacity, View } from 'react-native';
 
 const BackButton = (prop: { onClick: () => void }) => {
@@ -22,7 +22,7 @@ const BackButton = (prop: { onClick: () => void }) => {
       }}
       onPress={prop.onClick}>
       <View>
-        <Icon name="arrow-back-circle-outline" size={25} />
+        <Icon name="arrow-back" size={25} />
       </View>
     </TouchableOpacity>
   );

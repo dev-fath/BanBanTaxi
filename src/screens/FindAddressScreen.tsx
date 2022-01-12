@@ -2,8 +2,9 @@ import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { IFindAddressScreenProps } from '../interfaces/defaultScreenProps';
 
-const FindAddressScreen = () => {
+const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
   return (
     <View style={{ backgroundColor: 'white', height: '100%' }}>
       <View style={{ ...styles.inputContainer, marginTop: 24 }}>
@@ -41,7 +42,11 @@ const FindAddressScreen = () => {
         </View>
         <View style={styles.shortCutWithTextContainer}>
           <View style={styles.rightBar}>
-            <TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                navigation.setOptions({ headerShown: false });
+                navigation.push('FindAddressOnMap');
+              }}>
               <Icon name="map" size={16} />
             </TouchableWithoutFeedback>
           </View>
