@@ -7,6 +7,7 @@ const initialState: IInitialState = {
   sourceAddress: '',
   destinationAddress: '',
   direction: [{ latitude: 0, longitude: 0 }],
+  pinPoint: { latitude: 0, longitude: 0 },
 };
 export const addressSlice = createSlice({
   name: 'addressFind',
@@ -27,11 +28,20 @@ export const addressSlice = createSlice({
     direction: (state, action: PayloadAction<Coord[]>) => {
       state.direction = action.payload;
     },
+    pinPoint: (state, action: PayloadAction<Coord>) => {
+      state.pinPoint = action.payload;
+    },
   },
 });
 
-export const { findSource, findDestination, sourceAddress, destinationAddress, direction } =
-  addressSlice.actions;
+export const {
+  findSource,
+  findDestination,
+  sourceAddress,
+  destinationAddress,
+  direction,
+  pinPoint,
+} = addressSlice.actions;
 
 export const selectIsFindSource = (state: { isFindSource: boolean }) => state.isFindSource;
 
@@ -48,4 +58,5 @@ interface IInitialState {
   sourceAddress: string;
   destinationAddress: string;
   direction: Coord[];
+  pinPoint: Coord;
 }
