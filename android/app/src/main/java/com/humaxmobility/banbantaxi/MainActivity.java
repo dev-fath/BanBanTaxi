@@ -1,4 +1,4 @@
-package com.banbantaxi;
+package com.humaxmobility.banbantaxi;
 
 import com.facebook.react.ReactActivity;
 
