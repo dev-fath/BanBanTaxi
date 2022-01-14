@@ -4,7 +4,7 @@ import { TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Geolocation from '@react-native-community/geolocation';
 import { useDispatch } from 'react-redux';
-import { pinPoint } from '../redux/addressFind/addressFindSlice';
+import { pinPoint } from '../../redux/maps/addressFindSlice';
 
 const MyLocationButton = () => {
   const requestPermission = () => {

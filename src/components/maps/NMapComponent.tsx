@@ -4,18 +4,20 @@ import NaverMapView, { Coord } from 'react-native-nmap';
 import { useDispatch, useSelector } from 'react-redux';
 import Geolocation from '@react-native-community/geolocation';
 
-import { AddressState } from '../redux/addressFind/addressFindStore';
-import { pinPoint, sourceAddress } from '../redux/addressFind/addressFindSlice';
+import { pinPoint, sourceAddress } from '../../redux/maps/addressFindSlice';
 
-import markerImage from '../../assets/mapMarker.png';
-import { loadReverseGeocode } from '../services/apiService';
-import { ILand, IReverseGeocodeResponse } from '../interfaces/geocodeResponse';
+import markerImage from '../../../assets/mapMarker.png';
+import { loadReverseGeocode } from '../../services/maps/naverMapApiService';
+import { ILand, IReverseGeocodeResponse } from '../../interfaces/geocodeResponse';
+import { AddressState } from '../../redux/maps/addressFindStore';
 
 function BanBanMap() {
   const dispatch = useDispatch();
 
   const direction = useSelector((state: AddressState) => state.direction);
-  const pin = useSelector((state: AddressState) => state.pinPoint);
+  const pin = useSelector((state: AddressState) => {
+    return state.pinPoint;
+  });
   const getMyLocation = () => {
     Geolocation.getCurrentPosition((response) => {
       const { latitude, longitude }: Coord = response.coords;
@@ -23,9 +25,7 @@ function BanBanMap() {
       getAddressFromPoint({ latitude, longitude });
     });
   };
-  useEffect(() => {
-    getMyLocation();
-  }, []);
+  useEffect(getMyLocation, []);
 
   const getAddressFromPoint = (coord: Coord) => {
     const { latitude, longitude }: Coord = coord;

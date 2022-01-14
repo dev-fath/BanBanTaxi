@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { View, SafeAreaView } from 'react-native';
-import BanBanMap from '../components/NMapComponent';
-import { IDefaultScreenProps } from '../interfaces/defaultScreenProps';
-import MenuButton from '../components/MenuButton';
 import { Provider } from 'react-redux';
-import { addressFindStore } from '../redux/addressFind/addressFindStore';
+
+import BanBanMap from '../components/maps/NMapComponent';
+import { IDefaultScreenProps } from '../interfaces/defaultScreenProps';
+import MenuButton from '../components/common/MenuButton';
+import { addressFindStore } from '../redux/maps/addressFindStore';
 import JourneySettingComponent from '../components/JourneySettingContainer/JourneySettingComponent';
 
 function HomeScreen({ navigation }: IDefaultScreenProps) {

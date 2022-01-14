@@ -1,10 +1,10 @@
 import React from 'react';
 
-import BackButton from '../components/backButton';
+import BackButton from '../components/common/backButton';
 import { IFindAddressScreenProps } from '../interfaces/defaultScreenProps';
-import BanBanMap from '../components/NMapComponent';
+import BanBanMap from '../components/maps/NMapComponent';
 import { Provider } from 'react-redux';
-import { addressFindStore } from '../redux/addressFind/addressFindStore';
+import { addressFindStore } from '../redux/maps/addressFindStore';
 const FindAddressOnMapScreen = ({ navigation }: IFindAddressScreenProps) => {
   const handleClickBackButton = () => {
     navigation.goBack();

@@ -5,11 +5,12 @@ import { Coord } from 'react-native-nmap/index';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getDirections, loadGeocode } from '../../services/apiService';
-import { direction, findDestination, findSource } from '../../redux/addressFind/addressFindSlice';
+import { getDirections, loadGeocode } from '../../services/maps/naverMapApiService';
+import { AddressState } from '../../redux/maps/addressFindStore';
+import { direction, findDestination, findSource } from '../../redux/maps/addressFindSlice';
+
 import { IGeocodeResponse } from '../../interfaces/geocodeResponse';
 import { IDefaultScreenProps } from '../../interfaces/defaultScreenProps';
-import { AddressState } from '../../redux/addressFind/addressFindStore';
 
 const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
   const dispatch = useDispatch();
