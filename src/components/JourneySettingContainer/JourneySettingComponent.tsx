@@ -1,30 +1,18 @@
-import React, { useCallback, useEffect } from 'react';
+import React from 'react';
 
-import {
-  GestureResponderEvent,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
-import { getDirections, loadGeocode } from '../../services/apiService';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Coord } from 'react-native-nmap/index';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  AddressStateReducers,
-  direction,
-  findDestination,
-  findSource,
-  pinPoint,
-} from '../../redux/addressFind/addressFindSlice';
+
+import { getDirections, loadGeocode } from '../../services/apiService';
+import { direction, findDestination, findSource } from '../../redux/addressFind/addressFindSlice';
 import { IGeocodeResponse } from '../../interfaces/geocodeResponse';
 import { IDefaultScreenProps } from '../../interfaces/defaultScreenProps';
 import { AddressState } from '../../redux/addressFind/addressFindStore';
-import MyLocationButton from '../MyLocationButton';
 
 const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
+  const dispatch = useDispatch();
   const directionsArrayToCoord = (directionArray: null | [[number, number]]) => {
     if (!directionArray) {
       console.warn('null direction');
@@ -38,20 +26,12 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
   const goal: Coord = { latitude: 37.379213, longitude: 126.99937 };
   const url = 'https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving';
 
-  const dispatch = useDispatch();
-  const handleClickButton = (e: GestureResponderEvent) => {
+  const handleClickButton = () => {
     return getDirections(url, start, goal).then((result) => {
       const directionCoords: Coord[] = directionsArrayToCoord(result);
       dispatch(direction(directionCoords));
     });
   };
-  const pinPoint = useSelector<AddressStateReducers, Coord>((state) => {
-    return state.pinPoint;
-  });
-
-  const findState: boolean = useSelector<AddressStateReducers, boolean>(
-    (state) => state.isFindSource,
-  );
   const targetName: string = useSelector((state: AddressState) => state.sourceAddress);
 
   return (
@@ -68,7 +48,7 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
             console.log('출발지 선택 UI 나타내기(?)');
           }}>
           <Text style={styles.sourceButtonText}>[현위치] {targetName}</Text>
-          <MyLocationButton />
+          {/*<MyLocationButton />*/}
           {/*<TouchableWithoutFeedback*/}
           {/*  onPress={() => {*/}
           {/*    console.log('GPS 현재 위치로 이동');*/}
@@ -78,7 +58,7 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.destinationButton}
-          onPress={(e) => {
+          onPress={() => {
             dispatch(findDestination(true));
             console.log('목적지 선택 화면으로 이동(?)');
             console.log('목적지 선택 UI 나타내기(?)');

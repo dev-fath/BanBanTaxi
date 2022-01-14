@@ -7,7 +7,7 @@ const initialState: IInitialState = {
   sourceAddress: '',
   destinationAddress: '',
   direction: [{ latitude: 0, longitude: 0 }],
-  pinPoint: { latitude: 0, longitude: 0 },
+  pinPoint: { latitude: 37.378595, longitude: 127.112724 },
 };
 export const addressSlice = createSlice({
   name: 'addressFind',
