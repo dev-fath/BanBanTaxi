@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 
 import { Text } from 'react-native';
-import BackButton from '../backButton';
+import BackButton from '../common/backButton';
 import { useDispatch } from 'react-redux';
-import { findDestination, findSource } from '../../redux/addressFind/addressFindSlice';
+import { findDestination, findSource } from '../../redux/maps/addressFindSlice';
 
 const SearchAddressComponent = () => {
   const dispatch = useDispatch();

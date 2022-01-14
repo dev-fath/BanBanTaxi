@@ -1,7 +1,7 @@
 import { TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import React from 'react';
-import { IDefaultScreenProps } from '../interfaces/defaultScreenProps';
+import { IDefaultScreenProps } from '../../interfaces/defaultScreenProps';
 
 const MenuButton = ({ navigation }: IDefaultScreenProps) => {
   return (
