@@ -2,27 +2,31 @@ import React from 'react';
 
 import { TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Geolocation from '@react-native-community/geolocation';
+import { useDispatch } from 'react-redux';
+import { pinPoint } from '../redux/addressFind/addressFindSlice';
 
 const MyLocationButton = () => {
+  const requestPermission = () => {
+    return Geolocation.requestAuthorization();
+  };
+  const dispatch = useDispatch();
+  // const currentPinPoint = useSelector<AddressStateReducers, Coord>((state) => state.pinPoint);
+  const getMyLocation = () => {
+    Geolocation.getCurrentPosition((response) => {
+      dispatch(
+        pinPoint({ latitude: response.coords.latitude, longitude: response.coords.longitude }),
+      );
+      console.log(response.coords);
+    });
+  };
   return (
     <TouchableOpacity
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'absolute',
-        borderColor: 'black',
-        borderStyle: 'solid',
-        borderRadius: 50,
-        width: 50,
-        height: 50,
-        borderWidth: 2,
-        bottom: 16,
-        left: 16,
-        backgroundColor: '#ccc',
-      }}
-      onPress={(e) => console.log(e)}>
-      <Icon name="locate-outline" size={25} />
+      onPress={() => {
+        requestPermission();
+        getMyLocation();
+      }}>
+      <Icon name="locate-outline" size={18} />
     </TouchableOpacity>
   );
 };

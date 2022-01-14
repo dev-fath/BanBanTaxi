@@ -1,20 +1,18 @@
 import React from 'react';
 
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { getDirections, loadGeocode } from '../../services/apiService';
 import { Coord } from 'react-native-nmap/index';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  AddressStateReducers,
-  direction,
-  findDestination,
-  findSource,
-} from '../../redux/addressFind/addressFindSlice';
+
+import { getDirections, loadGeocode } from '../../services/apiService';
+import { direction, findDestination, findSource } from '../../redux/addressFind/addressFindSlice';
 import { IGeocodeResponse } from '../../interfaces/geocodeResponse';
 import { IDefaultScreenProps } from '../../interfaces/defaultScreenProps';
+import { AddressState } from '../../redux/addressFind/addressFindStore';
 
 const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
+  const dispatch = useDispatch();
   const directionsArrayToCoord = (directionArray: null | [[number, number]]) => {
     if (!directionArray) {
       console.warn('null direction');
@@ -28,16 +26,13 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
   const goal: Coord = { latitude: 37.379213, longitude: 126.99937 };
   const url = 'https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving';
 
-  const dispatch = useDispatch();
-  const handleClickButton = (e: { preventDefault: () => void }) => {
+  const handleClickButton = () => {
     return getDirections(url, start, goal).then((result) => {
       const directionCoords: Coord[] = directionsArrayToCoord(result);
       dispatch(direction(directionCoords));
     });
   };
-  const findState: boolean = useSelector<AddressStateReducers, boolean>(
-    (state) => state.isFindSource,
-  );
+  const targetName: string = useSelector((state: AddressState) => state.sourceAddress);
 
   return (
     <View style={styles.container}>
@@ -52,8 +47,14 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
             console.log('출발지 선택 화면으로 이동(?)');
             console.log('출발지 선택 UI 나타내기(?)');
           }}>
-          <Text style={styles.sourceButtonText}>[현위치] 휴맥스빌리지 {findState}</Text>
-          <Icon name={'locate-outline'} size={18} />
+          <Text style={styles.sourceButtonText}>[현위치] {targetName}</Text>
+          {/*<MyLocationButton />*/}
+          {/*<TouchableWithoutFeedback*/}
+          {/*  onPress={() => {*/}
+          {/*    console.log('GPS 현재 위치로 이동');*/}
+          {/*  }}>*/}
+          {/*  <Icon name={'locate-outline'} size={18} />*/}
+          {/*</TouchableWithoutFeedback>*/}
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.destinationButton}
@@ -61,7 +62,7 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
             dispatch(findDestination(true));
             console.log('목적지 선택 화면으로 이동(?)');
             console.log('목적지 선택 UI 나타내기(?)');
-            // handleClickButton
+            // handleClickButton(e);
           }}>
           <Text style={styles.destinationButtonText}>어디로 모실까요?</Text>
           <Icon style={styles.destinationButtonIcon} name={'arrow-forward-outline'} size={18} />
@@ -72,7 +73,7 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
 };
 
 const geocode = () => {
-  return loadGeocode({ query: '회안대로 ', count: 10, coordinate: '127.2359831,37.3839480' })
+  return loadGeocode({ keyword: '회안대로 ', count: 10, coordinate: '127.2359831,37.3839480' })
     .then<IGeocodeResponse>((res) => {
       return res.json();
     })
