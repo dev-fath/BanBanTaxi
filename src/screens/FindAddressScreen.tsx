@@ -1,19 +1,83 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import { IFindAddressScreenProps } from '../interfaces/defaultScreenProps';
+import _ from 'lodash';
+import { loadGeocode, loadKakaoAddress } from '../services/maps/naverMapApiService';
+import { useSelector } from 'react-redux';
+import { AddressState } from '../redux/maps/addressFindStore';
+import {
+  IAddresses,
+  IGeocodeResponse,
+  IKakaoAddressDocuments,
+  IKakaoAddressResponse,
+} from '../interfaces/geocodeResponse';
 
 const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
+  const [addressList, setAddressList] = useState<IAddresses[]>([]);
+  const centerLocation = useSelector((state: AddressState) => state.pinPoint);
+  const centerLocationParam = `${centerLocation.longitude},${centerLocation.latitude}`;
+  const loadAddresses = (text: string) => {
+    const addressFormatter = (addresses: IKakaoAddressDocuments[]) => {
+      return addresses.map((address): IAddresses => {
+        return {
+          roadAddress: address.address_name,
+          x: address.x,
+          y: address.y,
+        };
+      });
+    };
+
+    const getKakaoAddressList = loadKakaoAddress({ query: text, count: 10 }).then((response) =>
+      response.json().then<IKakaoAddressResponse>((data: IKakaoAddressResponse) => data),
+    );
+    // 검색 api 요청
+    void loadGeocode({
+      query: text,
+      coordinate: centerLocationParam,
+      count: 10,
+      page: 1,
+    })
+      .then((response) => response.json())
+      .then<IGeocodeResponse>((data: IGeocodeResponse) => {
+        return data;
+      })
+      .then((data) => {
+        console.log(data.addresses?.length);
+        if (data.addresses?.length === 0) {
+          return getKakaoAddressList
+            .then((response) => {
+              return addressFormatter(response.documents);
+            })
+            .then((addresses) => {
+              return addresses;
+            });
+        } else {
+          return data.addresses;
+        }
+      })
+      .then((result) => {
+        result ? setAddressList(result) : [];
+      });
+  };
+  const searchKeywordDebounce = _.debounce(loadAddresses, 250);
+
   return (
     <View style={{ backgroundColor: 'white', height: '100%' }}>
       <View style={{ ...styles.inputContainer, marginTop: 24 }}>
         <TextInput
           style={styles.textInput}
           placeholder={'[출발지] 검색해주세요'}
-          onTextInput={(e) => {
-            //TODO : 주소 찾아와서 setState
-            console.log(e);
+          onChangeText={(text) => {
+            searchKeywordDebounce(text);
           }}
         />
         <TextInput
@@ -60,9 +124,16 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
           </TouchableWithoutFeedback>
         </View>
       </View>
+      <FlatList data={addressList} renderItem={({ item }) => <Text>{item.roadAddress}</Text>}>
+        <Text>{addressList}</Text>
+      </FlatList>
     </View>
   );
 };
+
+//TODO : 가져온 목록으로 검색결과 뿌리기
+
+const AddressListComponent = () => {};
 
 const styles = StyleSheet.create({
   inputContainer: {
