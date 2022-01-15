@@ -8,6 +8,7 @@ import {
 } from '../../interfaces/geoPosition.interface';
 import { paramsToQueryString } from '../../utils/paramsToQueryString';
 import { HttpMethods } from '../apiService';
+import { KakaoSearchKeywordType } from '../../interfaces/geocodeResponse';
 
 const nmapKeyId = 'gudascnpd4';
 const nmapKey = 'sMXN9pmM2HJVr0GHQAIbkvkIjKqfZ8yn8HKIvUHd';
@@ -63,14 +64,19 @@ export const loadGeocode = (params: IGeocodeParams) => {
   });
 };
 
-export const loadKakaoAddress = (params: IGeocodeParams) => {
+export const loadKakaoAddress = (requestType: KakaoSearchKeywordType, params: IGeocodeParams) => {
   const queries: IKakaoQueryParams = {
     analyze_type: params.analyzeType || 'similar',
     query: params.query,
     page: params.page || 1,
+    x: params.x,
+    y: params.y,
     size: params.count,
   };
-  const apiUrl = `https://dapi.kakao.com/v2/local/search/address.json${paramsToQueryString(
+  // const apiUrl = `https://dapi.kakao.com/v2/local/search/address.json${paramsToQueryString(
+  //   queries,
+  // )}`;
+  const apiUrl = `https://dapi.kakao.com/v2/local/search/${requestType}.json${paramsToQueryString(
     queries,
   )}`;
   console.log(apiUrl);

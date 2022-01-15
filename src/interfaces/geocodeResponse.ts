@@ -128,3 +128,10 @@ const addressTypes = {
 } as const;
 
 type AddressType = typeof addressTypes[keyof typeof addressTypes];
+
+const kakaoSearchKeyword = {
+  keyword: 'keyword',
+  address: 'address',
+  category: 'category',
+};
+export type KakaoSearchKeywordType = typeof kakaoSearchKeyword[keyof typeof kakaoSearchKeyword];

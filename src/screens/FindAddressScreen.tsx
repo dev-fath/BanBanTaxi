@@ -11,12 +11,11 @@ import {
 } from 'react-native';
 import { IFindAddressScreenProps } from '../interfaces/defaultScreenProps';
 import _ from 'lodash';
-import { loadGeocode, loadKakaoAddress } from '../services/maps/naverMapApiService';
+import { loadKakaoAddress } from '../services/maps/naverMapApiService';
 import { useSelector } from 'react-redux';
 import { AddressState } from '../redux/maps/addressFindStore';
 import {
   IAddresses,
-  IGeocodeResponse,
   IKakaoAddressDocuments,
   IKakaoAddressResponse,
 } from '../interfaces/geocodeResponse';
@@ -36,33 +35,19 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
       });
     };
 
-    const getKakaoAddressList = loadKakaoAddress({ query: text, count: 10 }).then((response) =>
+    const getKakaoAddressList = loadKakaoAddress('keyword', {
+      query: text,
+      count: 10,
+      x: centerLocation.longitude,
+      y: centerLocation.latitude,
+      sort: 'distance',
+    }).then((response) =>
       response.json().then<IKakaoAddressResponse>((data: IKakaoAddressResponse) => data),
     );
-    // 검색 api 요청
-    void loadGeocode({
-      query: text,
-      coordinate: centerLocationParam,
-      count: 10,
-      page: 1,
-    })
-      .then((response) => response.json())
-      .then<IGeocodeResponse>((data: IGeocodeResponse) => {
-        return data;
-      })
-      .then((data) => {
-        console.log(data.addresses?.length);
-        if (data.addresses?.length === 0) {
-          return getKakaoAddressList
-            .then((response) => {
-              return addressFormatter(response.documents);
-            })
-            .then((addresses) => {
-              return addresses;
-            });
-        } else {
-          return data.addresses;
-        }
+    void getKakaoAddressList
+      .then((response) => {
+        console.log(response);
+        return addressFormatter(response.documents);
       })
       .then((result) => {
         result ? setAddressList(result) : [];
@@ -124,16 +109,17 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
           </TouchableWithoutFeedback>
         </View>
       </View>
-      <FlatList data={addressList} renderItem={({ item }) => <Text>{item.roadAddress}</Text>}>
-        <Text>{addressList}</Text>
-      </FlatList>
+      <AddressListComponent addressList={addressList} />
     </View>
   );
 };
 
-//TODO : 가져온 목록으로 검색결과 뿌리기
-
-const AddressListComponent = () => {};
+//TODO : 검색결과 항목 클릭하면 좌표로 주소 검색
+const AddressListComponent = (props: { addressList: IAddresses[] }) => {
+  return (
+    <FlatList data={props.addressList} renderItem={({ item }) => <Text>{item.roadAddress}</Text>} />
+  );
+};
 
 const styles = StyleSheet.create({
   inputContainer: {

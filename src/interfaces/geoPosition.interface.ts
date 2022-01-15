@@ -169,6 +169,9 @@ export interface IGeocodeParams {
   page?: number;
   count?: number;
   analyzeType?: AnalyzeType;
+  x?: number;
+  y?: number;
+  sort?: string;
 }
 export const AnalyzeTypes = {
   similar: 'similar',
@@ -181,4 +184,7 @@ export interface IKakaoQueryParams {
   analyze_type?: AnalyzeType;
   page?: number;
   size?: number;
+  x?: number;
+  y?: number;
+  sort?: string;
 }
