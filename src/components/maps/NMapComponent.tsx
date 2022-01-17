@@ -11,14 +11,26 @@ import { loadReverseGeocode } from '../../services/maps/naverMapApiService';
 import { ILand, IReverseGeocodeResponse } from '../../interfaces/geocodeResponse';
 import { AddressState } from '../../redux/maps/addressFindStore';
 
-function BanBanMap() {
+function BanBanMap(props: { searchLocation?: Coord }) {
   const dispatch = useDispatch();
 
   const direction = useSelector((state: AddressState) => state.direction);
-  const pin = useSelector((state: AddressState) => {
-    return state.pinPoint;
-  });
+  let pin: Coord;
+  if (props.searchLocation) {
+    pin = props.searchLocation;
+  } else {
+    pin = useSelector((state: AddressState) => {
+      return state.pinPoint;
+    });
+  }
   const getMyLocation = () => {
+    if (props.searchLocation) {
+      const { latitude, longitude }: Coord = props.searchLocation;
+      dispatch(pinPoint({ latitude, longitude }));
+      getAddressFromPoint({ latitude, longitude });
+      return;
+    }
+
     Geolocation.getCurrentPosition((response) => {
       const { latitude, longitude }: Coord = response.coords;
       dispatch(pinPoint({ latitude, longitude }));

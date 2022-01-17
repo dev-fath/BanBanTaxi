@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -11,15 +11,23 @@ import { findSource } from '../redux/maps/addressFindSlice';
 import _ from 'lodash';
 import loadAddresses from '../services/maps/loadAddressService';
 
-const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
+const FindAddressScreen = ({ navigation, route }: IFindAddressScreenProps) => {
   const dispatch = useDispatch();
   const [addressList, setAddressList] = useState<IAddresses[]>([]);
   const isFindSource = useSelector((state: AddressState) => state.isFindSource);
-  const centerLocation = useSelector((state: AddressState) => state.pinPoint);
+  const centerLocation = useSelector((state: AddressState) => state.centerPoint);
   const sourceAddress = useSelector((state: AddressState) => state.sourceAddress);
   const destinationAddress = useSelector((state: AddressState) => state.destinationAddress);
   const searchKeywordDebounce = _.debounce(loadAddresses, 250);
-  let destinationInput: TextInput | null;
+  const refDestination = useRef<TextInput>(null);
+  useEffect(() => {
+    return () => {
+      if (route?.params?.setFocusDestination) {
+        refDestination?.current?.focus();
+      }
+    };
+  });
+
   return (
     <View style={{ backgroundColor: 'white', height: '100%' }}>
       <View style={{ ...styles.inputContainer, marginTop: 24 }}>
@@ -38,12 +46,12 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
             setAddressList([]);
           }}
           onSubmitEditing={() => {
-            destinationInput?.focus();
+            refDestination.current?.focus();
           }}
           blurOnSubmit={false}
         />
         <TextInput
-          ref={(input) => (destinationInput = input)}
+          ref={refDestination}
           returnKeyType={'search'}
           style={styles.textInput}
           placeholder={'[목적지] 검색해주세요'}
@@ -94,7 +102,7 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
           </TouchableWithoutFeedback>
         </View>
       </View>
-      <AddressListComponent addressList={addressList} isDeparture={isFindSource} />
+      <AddressListComponent addressList={addressList} isFindSource={isFindSource} />
     </View>
   );
 };

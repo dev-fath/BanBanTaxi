@@ -1,53 +1,48 @@
-import { IAddresses } from '../../interfaces/geocodeResponse';
-import { FlatList, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { destinationAddress, pinPoint, sourceAddress } from '../../redux/maps/addressFindSlice';
+import { FlatList, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { DefaultScreenNavigationProp } from '../../@types/screenTypes';
+import { useDispatch } from 'react-redux';
+import { IAddresses } from '../../interfaces/geocodeResponse';
+import {
+  destinationAddressObject,
+  pinPoint,
+  sourceAddressObject,
+} from '../../redux/maps/addressFindSlice';
+import { FindAddressScreenNavigationProp } from '../../@types/screenTypes';
 
-const AddressListComponent = (props: { addressList: IAddresses[]; isDeparture?: boolean }) => {
-  const isDeparture = !!props.isDeparture;
+const AddressListComponent = (props: { addressList: IAddresses[]; isFindSource?: boolean }) => {
+  const isFindSource = !!props.isFindSource;
   return (
     <View>
-      {/*<Text>검색결과</Text>*/}
       <FlatList
         scrollEnabled={true}
         data={props.addressList}
-        renderItem={({ item }) => <AddressItem item={item} isDeparture={isDeparture} />}
+        renderItem={({ item }) => <AddressItem item={item} isFindSource={isFindSource} />}
       />
     </View>
   );
 };
 
-const AddressItem = (props: { item: IAddresses; isDeparture: boolean }) => {
+const AddressItem = (props: { item: IAddresses; isFindSource: boolean }) => {
   const dispatch = useDispatch();
-  const navigation: DefaultScreenNavigationProp = useNavigation();
+  const navigation: FindAddressScreenNavigationProp = useNavigation();
   return (
     <TouchableWithoutFeedback
       onPress={() => {
         dispatch(pinPoint({ latitude: Number(props.item.y), longitude: Number(props.item.x) }));
-        if (props.isDeparture) {
-          dispatch(
-            sourceAddress(
-              props.item.placeName || props.item.roadAddress || props.item.jibunAddress || '',
-            ),
-          );
+        if (props.isFindSource) {
+          dispatch(sourceAddressObject(props.item));
         } else {
-          dispatch(
-            destinationAddress(
-              props.item.placeName || props.item.roadAddress || props.item.jibunAddress || '',
-            ),
-          );
+          dispatch(destinationAddressObject(props.item));
         }
-        navigation.navigate('Home');
+        navigation.navigate('FindAddressOnMap');
       }}>
       <View style={styles.itemContainer}>
         <View>
           <PlaceName placeName={props.item.placeName} />
           <Text>{props.item.roadAddress}</Text>
         </View>
-        <Text style={styles.textChip}>{props.isDeparture ? '출발' : '도착'}</Text>
+        <Text style={styles.textChip}>{props.isFindSource ? '출발' : '도착'}</Text>
       </View>
     </TouchableWithoutFeedback>
   );
