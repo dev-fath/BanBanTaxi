@@ -4,7 +4,7 @@ import NaverMapView, { Coord } from 'react-native-nmap';
 import { useDispatch, useSelector } from 'react-redux';
 import Geolocation from '@react-native-community/geolocation';
 
-import { pinPoint, sourceAddress } from '../../redux/maps/addressFindSlice';
+import { destinationAddress, pinPoint, sourceAddress } from '../../redux/maps/addressFindSlice';
 
 import markerImage from '../../../assets/mapMarker.png';
 import { loadReverseGeocode } from '../../services/maps/naverMapApiService';
@@ -14,6 +14,7 @@ import { AddressState } from '../../redux/maps/addressFindStore';
 function BanBanMap(props: { searchLocation?: Coord }) {
   const dispatch = useDispatch();
 
+  const isFindSource = useSelector((state: AddressState) => state.isFindSource);
   const direction = useSelector((state: AddressState) => state.direction);
   let pin: Coord;
   if (props.searchLocation) {
@@ -52,7 +53,10 @@ function BanBanMap(props: { searchLocation?: Coord }) {
           console.log('목적지 정보 없음');
           return;
         }
-        dispatch(sourceAddress(getTargetName(data?.results[0]?.land)));
+        isFindSource
+          ? dispatch(sourceAddress(getTargetName(data?.results[0]?.land)))
+          : dispatch(destinationAddress(getTargetName(data?.results[0]?.land)));
+        dispatch(pinPoint({ latitude, longitude }));
       });
   };
 

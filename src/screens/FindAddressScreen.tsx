@@ -38,10 +38,6 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
             dispatch(findSource(true));
             setAddressList([]);
           }}
-          onSubmitEditing={() => {
-            refDestination.current?.focus();
-          }}
-          blurOnSubmit={false}
         />
         <TextInput
           ref={refDestination}
