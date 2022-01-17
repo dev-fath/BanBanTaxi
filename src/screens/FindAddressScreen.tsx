@@ -1,29 +1,62 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { IFindAddressScreenProps } from '../interfaces/defaultScreenProps';
 import { AddressState } from '../redux/maps/addressFindStore';
 import { IAddresses } from '../interfaces/geocodeResponse';
 import AddressListComponent from '../components/findAddress/AddressList';
-import FindTargetTextInputComponent from '../components/findAddress/FindAddressInput';
+import { findSource } from '../redux/maps/addressFindSlice';
+import _ from 'lodash';
+import loadAddresses from '../services/maps/loadAddressService';
 
 const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
+  const dispatch = useDispatch();
   const [addressList, setAddressList] = useState<IAddresses[]>([]);
-  const isDeparture = useSelector((state: AddressState) => state.isFindSource);
+  const isFindSource = useSelector((state: AddressState) => state.isFindSource);
+  const centerLocation = useSelector((state: AddressState) => state.pinPoint);
+  const sourceAddress = useSelector((state: AddressState) => state.sourceAddress);
+  const destinationAddress = useSelector((state: AddressState) => state.destinationAddress);
+  const searchKeywordDebounce = _.debounce(loadAddresses, 250);
+  let destinationInput: TextInput | null;
   return (
     <View style={{ backgroundColor: 'white', height: '100%' }}>
       <View style={{ ...styles.inputContainer, marginTop: 24 }}>
-        <FindTargetTextInputComponent
+        <TextInput
+          returnKeyType={'search'}
+          style={styles.textInput}
           placeholder={'[출발지] 검색해주세요'}
-          isFindSource={true}
-          setAddressList={setAddressList}
+          defaultValue={sourceAddress || ''}
+          autoFocus={isFindSource}
+          onChangeText={(text) => {
+            searchKeywordDebounce(text, centerLocation, setAddressList);
+          }}
+          onFocus={(e) => {
+            searchKeywordDebounce(e.nativeEvent.text, centerLocation, setAddressList);
+            dispatch(findSource(true));
+            setAddressList([]);
+          }}
+          onSubmitEditing={() => {
+            destinationInput?.focus();
+          }}
+          blurOnSubmit={false}
         />
-        <FindTargetTextInputComponent
+        <TextInput
+          ref={(input) => (destinationInput = input)}
+          returnKeyType={'search'}
+          style={styles.textInput}
           placeholder={'[목적지] 검색해주세요'}
-          isFindSource={false}
-          setAddressList={setAddressList}
+          defaultValue={destinationAddress || ''}
+          autoFocus={!isFindSource}
+          onChangeText={(text) => {
+            searchKeywordDebounce(text, centerLocation, setAddressList);
+          }}
+          onFocus={(e) => {
+            searchKeywordDebounce(e.nativeEvent.text, centerLocation, setAddressList);
+            dispatch(findSource(false));
+            setAddressList([]);
+          }}
         />
       </View>
       <View style={styles.shortCutContainer}>
@@ -61,7 +94,7 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
           </TouchableWithoutFeedback>
         </View>
       </View>
-      <AddressListComponent addressList={addressList} isDeparture={isDeparture} />
+      <AddressListComponent addressList={addressList} isDeparture={isFindSource} />
     </View>
   );
 };
@@ -71,6 +104,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+  },
+  textInput: {
+    height: 50,
+    fontSize: 16,
+    backgroundColor: 'white',
+    marginTop: 8,
+    paddingLeft: 16,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    width: '90%',
   },
   shortCutContainer: {
     width: '100%',

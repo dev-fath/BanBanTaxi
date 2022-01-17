@@ -1,7 +1,10 @@
-//TODO : 검색결과 항목 클릭하면 좌표로 주소 검색
 import { IAddresses } from '../../interfaces/geocodeResponse';
 import { FlatList, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { destinationAddress, pinPoint, sourceAddress } from '../../redux/maps/addressFindSlice';
+import { useNavigation } from '@react-navigation/native';
+import { DefaultScreenNavigationProp } from '../../@types/screenTypes';
 
 const AddressListComponent = (props: { addressList: IAddresses[]; isDeparture?: boolean }) => {
   const isDeparture = !!props.isDeparture;
@@ -18,8 +21,27 @@ const AddressListComponent = (props: { addressList: IAddresses[]; isDeparture?: 
 };
 
 const AddressItem = (props: { item: IAddresses; isDeparture: boolean }) => {
+  const dispatch = useDispatch();
+  const navigation: DefaultScreenNavigationProp = useNavigation();
   return (
-    <TouchableWithoutFeedback>
+    <TouchableWithoutFeedback
+      onPress={() => {
+        dispatch(pinPoint({ latitude: Number(props.item.y), longitude: Number(props.item.x) }));
+        if (props.isDeparture) {
+          dispatch(
+            sourceAddress(
+              props.item.placeName || props.item.roadAddress || props.item.jibunAddress || '',
+            ),
+          );
+        } else {
+          dispatch(
+            destinationAddress(
+              props.item.placeName || props.item.roadAddress || props.item.jibunAddress || '',
+            ),
+          );
+        }
+        navigation.navigate('Home');
+      }}>
       <View style={styles.itemContainer}>
         <View>
           <PlaceName placeName={props.item.placeName} />

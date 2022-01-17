@@ -14,6 +14,8 @@ const FindTargetTextInputComponent = (props: {
 }) => {
   const dispatch = useDispatch();
   const centerLocation = useSelector((state: AddressState) => state.pinPoint);
+  const sourceAddress = useSelector((state: AddressState) => state.sourceAddress);
+  const destinationAddress = useSelector((state: AddressState) => state.destinationAddress);
   const searchKeywordDebounce = _.debounce(loadAddresses, 250);
   //TODO : ref 설정해서 엔터키 입력하면 목적지 설정으로 이동
   return (
@@ -21,12 +23,14 @@ const FindTargetTextInputComponent = (props: {
       returnKeyType={'search'}
       style={styles.textInput}
       placeholder={props.placeholder}
+      defaultValue={props.isFindSource ? sourceAddress : destinationAddress}
+      autoFocus={props.isFindSource}
       onChangeText={(text) => {
         searchKeywordDebounce(text, centerLocation, props.setAddressList);
       }}
       onFocus={(e) => {
         searchKeywordDebounce(e.nativeEvent.text, centerLocation, props.setAddressList);
-        dispatch(findSource(props.isFindSource || true));
+        dispatch(findSource(props.isFindSource));
         props.setAddressList([]);
       }}
     />

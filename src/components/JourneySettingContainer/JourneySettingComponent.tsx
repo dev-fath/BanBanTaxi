@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { getDirections, loadGeocode } from '../../services/maps/naverMapApiService';
 import { AddressState } from '../../redux/maps/addressFindStore';
-import { direction, findDestination, findSource } from '../../redux/maps/addressFindSlice';
+import { direction, findSource } from '../../redux/maps/addressFindSlice';
 
 import { IGeocodeResponse } from '../../interfaces/geocodeResponse';
 import { IDefaultScreenProps } from '../../interfaces/defaultScreenProps';
@@ -33,7 +33,8 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
       dispatch(direction(directionCoords));
     });
   };
-  const targetName: string = useSelector((state: AddressState) => state.sourceAddress);
+  const sourceAddress: string = useSelector((state: AddressState) => state.sourceAddress);
+  const destinationAddress: string = useSelector((state: AddressState) => state.destinationAddress);
 
   return (
     <View style={styles.container}>
@@ -41,14 +42,10 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
         <TouchableOpacity
           style={styles.sourceButton}
           onPress={() => {
-            navigation.navigate('FindAddressNavigator');
             dispatch(findSource(true));
-            console.log(geocode());
-            // dispatch(sourceAddress('회안대로 350-25'));
-            console.log('출발지 선택 화면으로 이동(?)');
-            console.log('출발지 선택 UI 나타내기(?)');
+            navigation.navigate('FindAddressNavigator');
           }}>
-          <Text style={styles.sourceButtonText}>[현위치] {targetName}</Text>
+          <Text style={styles.sourceButtonText}>{sourceAddress}</Text>
           {/*<MyLocationButton />*/}
           {/*<TouchableWithoutFeedback*/}
           {/*  onPress={() => {*/}
@@ -60,12 +57,10 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
         <TouchableOpacity
           style={styles.destinationButton}
           onPress={() => {
-            dispatch(findDestination(true));
-            console.log('목적지 선택 화면으로 이동(?)');
-            console.log('목적지 선택 UI 나타내기(?)');
-            // handleClickButton(e);
+            dispatch(findSource(false));
+            navigation.navigate('FindAddressNavigator');
           }}>
-          <Text style={styles.destinationButtonText}>어디로 모실까요?</Text>
+          <Text style={styles.destinationButtonText}>{destinationAddress}</Text>
           <Icon style={styles.destinationButtonIcon} name={'arrow-forward-outline'} size={18} />
         </TouchableOpacity>
       </View>
@@ -74,7 +69,7 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
 };
 
 const geocode = () => {
-  return loadGeocode({ keyword: '회안대로 ', count: 10, coordinate: '127.2359831,37.3839480' })
+  return loadGeocode({ query: '회안대로 ', count: 10, coordinate: '127.2359831,37.3839480' })
     .then<IGeocodeResponse>((res) => {
       return res.json();
     })
