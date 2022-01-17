@@ -57,9 +57,8 @@ function BanBanMap(props: { searchLocation?: Coord }) {
   };
 
   const getTargetName = (land: ILand) => {
-    const landNumber = land.number2 ? `${land.number1}-${land.number2}` : land.number1;
     if (land?.addition0?.value !== '') {
-      return `${land?.addition0?.value} (${land.name} ${landNumber})`;
+      return `${land?.addition0?.value}`;
     } else {
       return `${land.name} ${land.number1} ${land.number2}`;
     }

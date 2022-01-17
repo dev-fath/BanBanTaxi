@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -11,7 +11,7 @@ import { findSource } from '../redux/maps/addressFindSlice';
 import _ from 'lodash';
 import loadAddresses from '../services/maps/loadAddressService';
 
-const FindAddressScreen = ({ navigation, route }: IFindAddressScreenProps) => {
+const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
   const dispatch = useDispatch();
   const [addressList, setAddressList] = useState<IAddresses[]>([]);
   const isFindSource = useSelector((state: AddressState) => state.isFindSource);
@@ -20,13 +20,6 @@ const FindAddressScreen = ({ navigation, route }: IFindAddressScreenProps) => {
   const destinationAddress = useSelector((state: AddressState) => state.destinationAddress);
   const searchKeywordDebounce = _.debounce(loadAddresses, 250);
   const refDestination = useRef<TextInput>(null);
-  useEffect(() => {
-    return () => {
-      if (route?.params?.setFocusDestination) {
-        refDestination?.current?.focus();
-      }
-    };
-  });
 
   return (
     <View style={{ backgroundColor: 'white', height: '100%' }}>
@@ -82,7 +75,7 @@ const FindAddressScreen = ({ navigation, route }: IFindAddressScreenProps) => {
             </View>
           </TouchableWithoutFeedback>
         </View>
-        <View style={styles.shortCutWithTextContainer}>
+        <View style={styles.shortCutWithoutTextContainer}>
           <View style={styles.rightBar}>
             <TouchableWithoutFeedback
               onPress={() => {
@@ -144,7 +137,7 @@ const styles = StyleSheet.create({
     flexWrap: 'nowrap',
   },
   shortCutWithText: { display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', marginRight: 16 },
-  shortCutWithoutContainer: {
+  shortCutWithoutTextContainer: {
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'nowrap',

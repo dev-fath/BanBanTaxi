@@ -15,7 +15,7 @@ export type DefaultScreenNavigationProp = NativeStackNavigationProp<RootStackPar
 export type DefaultScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
 
 export type FindAddressStackParamList = {
-  FindAddress: { setFocusDestination?: boolean };
+  FindAddress: { setFocusDestination?: boolean; fromMyLocation?: boolean };
   FindAddressOnMap: undefined;
 };
 
