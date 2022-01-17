@@ -1,86 +1,29 @@
 import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { IFindAddressScreenProps } from '../interfaces/defaultScreenProps';
-import _ from 'lodash';
-import { loadKakaoAddress } from '../services/maps/naverMapApiService';
-import { useSelector } from 'react-redux';
 import { AddressState } from '../redux/maps/addressFindStore';
-import {
-  IAddresses,
-  IKakaoAddressDocuments,
-  IKakaoAddressResponse,
-} from '../interfaces/geocodeResponse';
+import { IAddresses } from '../interfaces/geocodeResponse';
 import AddressListComponent from '../components/findAddress/AddressList';
+import FindTargetTextInputComponent from '../components/findAddress/FindAddressInput';
 
 const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
   const [addressList, setAddressList] = useState<IAddresses[]>([]);
-  const centerLocation = useSelector((state: AddressState) => state.pinPoint);
-  const loadAddresses = (text: string) => {
-    const addressFormatter = (addresses: IKakaoAddressDocuments[]) => {
-      return addresses.map((address): IAddresses => {
-        return {
-          placeName: address.place_name,
-          roadAddress: address.road_address_name || address.address_name,
-          x: address.x,
-          y: address.y,
-        };
-      });
-    };
-
-    const searchParams = {
-      query: text,
-      count: 10,
-      x: centerLocation.longitude,
-      y: centerLocation.latitude,
-      sort: 'distance',
-    };
-
-    const getKakaoAddressListByKeyword = loadKakaoAddress('keyword', searchParams).then(
-      (response) =>
-        response.json().then<IKakaoAddressResponse>((data: IKakaoAddressResponse) => data),
-    );
-    const getKakaoAddressListByAddress = loadKakaoAddress('address', searchParams).then(
-      (response) =>
-        response.json().then<IKakaoAddressResponse>((data: IKakaoAddressResponse) => data),
-    );
-    void getKakaoAddressListByKeyword
-      .then((response) => response.documents)
-      .then((documents) => {
-        if (documents.length === 0) {
-          return getKakaoAddressListByAddress
-            .then((response) => response.documents)
-            .then((documents) => {
-              return addressFormatter(documents);
-            });
-        } else {
-          return addressFormatter(documents);
-        }
-      })
-      .then((addressList) => {
-        setAddressList(addressList);
-      });
-  };
-  const searchKeywordDebounce = _.debounce(loadAddresses, 250);
-
+  const isDeparture = useSelector((state: AddressState) => state.isFindSource);
   return (
     <View style={{ backgroundColor: 'white', height: '100%' }}>
       <View style={{ ...styles.inputContainer, marginTop: 24 }}>
-        <TextInput
-          style={styles.textInput}
+        <FindTargetTextInputComponent
           placeholder={'[출발지] 검색해주세요'}
-          onChangeText={(text) => {
-            searchKeywordDebounce(text);
-          }}
+          isFindSource={true}
+          setAddressList={setAddressList}
         />
-        <TextInput
-          style={styles.textInput}
+        <FindTargetTextInputComponent
           placeholder={'[목적지] 검색해주세요'}
-          onTextInput={(e) => {
-            //TODO : 주소 찾아와서 setState
-            console.log(e);
-          }}
+          isFindSource={false}
+          setAddressList={setAddressList}
         />
       </View>
       <View style={styles.shortCutContainer}>
@@ -118,7 +61,7 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
           </TouchableWithoutFeedback>
         </View>
       </View>
-      <AddressListComponent addressList={addressList} />
+      <AddressListComponent addressList={addressList} isDeparture={isDeparture} />
     </View>
   );
 };
@@ -128,17 +71,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-  },
-  textInput: {
-    height: 50,
-    fontSize: 16,
-    backgroundColor: 'white',
-    marginTop: 8,
-    paddingLeft: 16,
-    borderRadius: 50,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    width: '90%',
   },
   shortCutContainer: {
     width: '100%',
