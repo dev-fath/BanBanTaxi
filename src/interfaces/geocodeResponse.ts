@@ -12,6 +12,7 @@ interface GeocodeMeta {
 }
 
 export interface IAddresses {
+  placeName?: string;
   roadAddress?: string;
   jibunAddress?: string;
   englishAddress?: string;
@@ -83,7 +84,9 @@ export interface IKakaoAddressResponse {
 }
 
 export interface IKakaoAddressDocuments {
+  place_name?: string;
   address_name: string;
+  road_address_name: string;
   address_type: AddressType;
   x: string; //	X 좌표값, 경위도인 경우 경도(longitude)
   y: string; //	Y 좌표값, 경위도인 경우 위도(latitude)
@@ -129,9 +132,4 @@ const addressTypes = {
 
 type AddressType = typeof addressTypes[keyof typeof addressTypes];
 
-const kakaoSearchKeyword = {
-  keyword: 'keyword',
-  address: 'address',
-  category: 'category',
-};
-export type KakaoSearchKeywordType = typeof kakaoSearchKeyword[keyof typeof kakaoSearchKeyword];
+export type KakaoSearchKeywordType = 'keyword' | 'address' | 'category';

@@ -64,7 +64,10 @@ export const loadGeocode = (params: IGeocodeParams) => {
   });
 };
 
-export const loadKakaoAddress = (requestType: KakaoSearchKeywordType, params: IGeocodeParams) => {
+export const loadKakaoAddress = (
+  requestType: KakaoSearchKeywordType = 'keyword',
+  params: IGeocodeParams,
+) => {
   const queries: IKakaoQueryParams = {
     analyze_type: params.analyzeType || 'similar',
     query: params.query,

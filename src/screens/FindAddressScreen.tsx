@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { IFindAddressScreenProps } from '../interfaces/defaultScreenProps';
 import _ from 'lodash';
 import { loadKakaoAddress } from '../services/maps/naverMapApiService';
@@ -19,38 +12,54 @@ import {
   IKakaoAddressDocuments,
   IKakaoAddressResponse,
 } from '../interfaces/geocodeResponse';
+import AddressListComponent from '../components/findAddress/AddressList';
 
 const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
   const [addressList, setAddressList] = useState<IAddresses[]>([]);
   const centerLocation = useSelector((state: AddressState) => state.pinPoint);
-  const centerLocationParam = `${centerLocation.longitude},${centerLocation.latitude}`;
   const loadAddresses = (text: string) => {
     const addressFormatter = (addresses: IKakaoAddressDocuments[]) => {
       return addresses.map((address): IAddresses => {
         return {
-          roadAddress: address.address_name,
+          placeName: address.place_name,
+          roadAddress: address.road_address_name || address.address_name,
           x: address.x,
           y: address.y,
         };
       });
     };
 
-    const getKakaoAddressList = loadKakaoAddress('keyword', {
+    const searchParams = {
       query: text,
       count: 10,
       x: centerLocation.longitude,
       y: centerLocation.latitude,
       sort: 'distance',
-    }).then((response) =>
-      response.json().then<IKakaoAddressResponse>((data: IKakaoAddressResponse) => data),
+    };
+
+    const getKakaoAddressListByKeyword = loadKakaoAddress('keyword', searchParams).then(
+      (response) =>
+        response.json().then<IKakaoAddressResponse>((data: IKakaoAddressResponse) => data),
     );
-    void getKakaoAddressList
-      .then((response) => {
-        console.log(response);
-        return addressFormatter(response.documents);
+    const getKakaoAddressListByAddress = loadKakaoAddress('address', searchParams).then(
+      (response) =>
+        response.json().then<IKakaoAddressResponse>((data: IKakaoAddressResponse) => data),
+    );
+    void getKakaoAddressListByKeyword
+      .then((response) => response.documents)
+      .then((documents) => {
+        if (documents.length === 0) {
+          return getKakaoAddressListByAddress
+            .then((response) => response.documents)
+            .then((documents) => {
+              return addressFormatter(documents);
+            });
+        } else {
+          return addressFormatter(documents);
+        }
       })
-      .then((result) => {
-        result ? setAddressList(result) : [];
+      .then((addressList) => {
+        setAddressList(addressList);
       });
   };
   const searchKeywordDebounce = _.debounce(loadAddresses, 250);
@@ -113,14 +122,6 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
     </View>
   );
 };
-
-//TODO : 검색결과 항목 클릭하면 좌표로 주소 검색
-const AddressListComponent = (props: { addressList: IAddresses[] }) => {
-  return (
-    <FlatList data={props.addressList} renderItem={({ item }) => <Text>{item.roadAddress}</Text>} />
-  );
-};
-
 const styles = StyleSheet.create({
   inputContainer: {
     display: 'flex',
