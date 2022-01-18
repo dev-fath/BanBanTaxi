@@ -47,10 +47,7 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
           }}>
           <Text style={styles.sourceButtonText}>{sourceAddress}</Text>
           {/*<MyLocationButton />*/}
-          {/*<TouchableWithoutFeedback*/}
-          {/*  onPress={() => {*/}
-          {/*    console.log('GPS 현재 위치로 이동');*/}
-          {/*  }}>*/}
+          {/*<TouchableWithoutFeedback>*/}
           {/*  <Icon name={'locate-outline'} size={18} />*/}
           {/*</TouchableWithoutFeedback>*/}
         </TouchableOpacity>
@@ -60,7 +57,9 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
             dispatch(findSource(false));
             navigation.navigate('FindAddressNavigator');
           }}>
-          <Text style={styles.destinationButtonText}>{destinationAddress}</Text>
+          <Text style={styles.destinationButtonText}>
+            {destinationAddress || '어디로 모실까요?'}
+          </Text>
           <Icon style={styles.destinationButtonIcon} name={'arrow-forward-outline'} size={18} />
         </TouchableOpacity>
       </View>

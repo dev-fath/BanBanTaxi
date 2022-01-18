@@ -3,8 +3,7 @@ import { Coord } from 'react-native-nmap';
 import { IAddresses } from '../../interfaces/geocodeResponse';
 
 const initialState: IInitialState = {
-  isFindSource: false,
-  isFindDestination: false,
+  isFindSource: true,
   sourceAddress: '',
   destinationAddress: '',
   sourceAddressObject: {},
@@ -19,9 +18,6 @@ export const addressSlice = createSlice({
   reducers: {
     findSource: (state, action: PayloadAction<boolean>) => {
       state.isFindSource = action.payload;
-    },
-    findDestination: (state, action: PayloadAction<boolean>) => {
-      state.isFindDestination = action.payload;
     },
     sourceAddress: (state, action: PayloadAction<string>) => {
       state.sourceAddress = action.payload;
@@ -49,7 +45,6 @@ export const addressSlice = createSlice({
 
 export const {
   findSource,
-  findDestination,
   sourceAddress,
   destinationAddress,
   direction,
@@ -69,7 +64,6 @@ export default addressSlice.reducer;
 
 interface IInitialState {
   isFindSource: boolean;
-  isFindDestination: boolean;
   sourceAddress: string;
   destinationAddress: string;
   sourceAddressObject: IAddresses;

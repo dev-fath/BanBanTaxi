@@ -13,8 +13,7 @@ import { AddressState } from '../../redux/maps/addressFindStore';
 
 function BanBanMap(props: { searchLocation?: Coord }) {
   const dispatch = useDispatch();
-
-  const isFindSource = useSelector((state: AddressState) => state.isFindSource);
+  const isFindSource = true;
   const direction = useSelector((state: AddressState) => state.direction);
   let pin: Coord;
   if (props.searchLocation) {
@@ -56,7 +55,6 @@ function BanBanMap(props: { searchLocation?: Coord }) {
         isFindSource
           ? dispatch(sourceAddress(getTargetName(data?.results[0]?.land)))
           : dispatch(destinationAddress(getTargetName(data?.results[0]?.land)));
-        dispatch(pinPoint({ latitude, longitude }));
       });
   };
 
