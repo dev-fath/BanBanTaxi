@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -29,11 +29,9 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
           placeholder={'[출발지] 검색해주세요'}
           defaultValue={sourceAddressObject.placeName || ''}
           onChangeText={(text) => {
-            console.log('textChange');
             searchKeywordDebounce(text, centerLocation, setAddressList);
           }}
-          onFocus={(e) => {
-            console.log(sourceAddressObject.placeName);
+          onFocus={() => {
             dispatch(findSource(true));
           }}
           onBlur={() => {
@@ -48,7 +46,7 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
           onChangeText={(text) => {
             searchKeywordDebounce(text, centerLocation, setAddressList);
           }}
-          onFocus={(e) => {
+          onFocus={() => {
             dispatch(findSource(false));
           }}
           onBlur={() => {
