@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import BackButton from '../components/common/backButton';
 import { IFindAddressScreenProps } from '../interfaces/defaultScreenProps';
@@ -8,15 +8,28 @@ import SettingPoint from '../components/findAddress/SettingPoint';
 import { Image, StyleSheet, View } from 'react-native';
 import markerImage from '../../assets/mapMarker.png';
 import NaverMapView, { Coord } from 'react-native-nmap/index';
-import { destinationAddress, sourceAddress } from '../redux/maps/addressFindSlice';
 import { getAddressFromPoint } from '../components/findAddress/getAddressFromPoint';
-const FindAddressOnMapScreen = ({ navigation }: IFindAddressScreenProps) => {
+import { destinationPoint, sourcePoint } from '../redux/maps/addressFindSlice';
+const FindAddressOnMapScreen = ({ navigation, route }: IFindAddressScreenProps) => {
   const handleClickBackButton = () => {
     navigation.goBack();
   };
-  const pinPoint = useSelector((state: AddressState) => state.pinPoint);
-  const isFindSource = useSelector((state: AddressState) => state.isFindSource);
   const dispatch = useDispatch();
+  const isFindSource = useSelector((state: AddressState) => state.isFindSource);
+  const pinPoint = isFindSource
+    ? useSelector((state: AddressState) => state.sourcePoint)
+    : useSelector((state: AddressState) => state.destinationPoint);
+  const callback = useCallback(
+    ({ latitude, longitude }: Coord) => {
+      if (isFindSource) {
+        dispatch(sourcePoint({ latitude, longitude }));
+      } else {
+        dispatch(destinationPoint({ latitude, longitude }));
+      }
+    },
+    [pinPoint],
+  );
+
   return (
     <>
       <Provider store={addressFindStore}>
@@ -34,21 +47,15 @@ const FindAddressOnMapScreen = ({ navigation }: IFindAddressScreenProps) => {
             mapPadding={{ bottom: 60 }}
             center={{ ...pinPoint, zoom: 16 }}
             onCameraChange={(e) => {
+              console.log(e);
               const { latitude, longitude }: Coord = e;
               const address = getAddressFromPoint({ latitude, longitude });
-              void address.then((result) => {
-                isFindSource
-                  ? dispatch(sourceAddress(result))
-                  : dispatch(destinationAddress(result));
+              void address.then((addressString) => {
+                console.log(addressString);
               });
-            }}>
-            {/*<Path*/}
-            {/*  coordinates={direction}*/}
-            {/*  onClick={() => console.warn('onClick! path')}*/}
-            {/*  width={10}*/}
-            {/*  color={'#00FF00'}*/}
-            {/*/>*/}
-          </NaverMapView>
+              callback({ latitude, longitude });
+            }}
+          />
         </View>
         <SettingPoint />
       </Provider>

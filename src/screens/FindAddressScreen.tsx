@@ -13,14 +13,13 @@ import loadAddresses from '../services/maps/loadAddressService';
 
 const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
   const dispatch = useDispatch();
-  const [addressList, setAddressList] = useState<IAddresses[]>([]);
-  const isFindSource = useSelector((state: AddressState) => state.isFindSource);
-  const centerLocation = useSelector((state: AddressState) => state.centerPoint);
-  const sourceAddress = useSelector((state: AddressState) => state.sourceAddress);
-  const destinationAddress = useSelector((state: AddressState) => state.destinationAddress);
+  const sourceAddressObject = useSelector((state: AddressState) => state.sourceAddressObject);
+  const destinationAddressObject = useSelector(
+    (state: AddressState) => state.destinationAddressObject,
+  );
   const searchKeywordDebounce = _.debounce(loadAddresses, 250);
-  const refDestination = useRef<TextInput>(null);
-
+  const centerLocation = useSelector((state: AddressState) => state.centerPoint);
+  const [addressList, setAddressList] = useState<IAddresses[]>([]);
   return (
     <View style={{ backgroundColor: 'white', height: '100%' }}>
       <View style={{ ...styles.inputContainer, marginTop: 24 }}>
@@ -28,30 +27,31 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
           returnKeyType={'search'}
           style={styles.textInput}
           placeholder={'[출발지] 검색해주세요'}
-          defaultValue={sourceAddress || ''}
-          autoFocus={isFindSource}
+          defaultValue={sourceAddressObject.placeName || ''}
           onChangeText={(text) => {
+            console.log('textChange');
             searchKeywordDebounce(text, centerLocation, setAddressList);
           }}
           onFocus={(e) => {
-            searchKeywordDebounce(e.nativeEvent.text, centerLocation, setAddressList);
+            console.log(sourceAddressObject.placeName);
             dispatch(findSource(true));
+          }}
+          onBlur={() => {
             setAddressList([]);
           }}
         />
         <TextInput
-          ref={refDestination}
           returnKeyType={'search'}
           style={styles.textInput}
           placeholder={'[목적지] 검색해주세요'}
-          defaultValue={destinationAddress || ''}
-          autoFocus={!isFindSource}
+          defaultValue={destinationAddressObject.placeName || ''}
           onChangeText={(text) => {
             searchKeywordDebounce(text, centerLocation, setAddressList);
           }}
           onFocus={(e) => {
-            searchKeywordDebounce(e.nativeEvent.text, centerLocation, setAddressList);
             dispatch(findSource(false));
+          }}
+          onBlur={() => {
             setAddressList([]);
           }}
         />
@@ -91,7 +91,7 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
           </TouchableWithoutFeedback>
         </View>
       </View>
-      <AddressListComponent addressList={addressList} isFindSource={isFindSource} />
+      <AddressListComponent addressList={addressList} />
     </View>
   );
 };

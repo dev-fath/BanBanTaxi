@@ -3,13 +3,17 @@ import React from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AddressState } from '../../redux/maps/addressFindStore';
-import { destinationAddress, sourceAddress } from '../../redux/maps/addressFindSlice';
+import { sourcePoint } from '../../redux/maps/addressFindSlice';
 import { useNavigation } from '@react-navigation/native';
-import { FindAddressScreenNavigationProp } from '../../@types/screenTypes';
+import {
+  DefaultScreenNavigationProp,
+  FindAddressScreenNavigationProp,
+} from '../../@types/screenTypes';
 
 const SettingPoint = () => {
   const dispatch = useDispatch();
   const navigation: FindAddressScreenNavigationProp = useNavigation();
+  const rootNavigation: DefaultScreenNavigationProp = useNavigation();
   const isFindSource = useSelector((state: AddressState) => state.isFindSource);
   const address = isFindSource
     ? useSelector((state: AddressState) => state.sourceAddressObject)
@@ -26,23 +30,20 @@ const SettingPoint = () => {
           style={styles.button}
           onPress={() => {
             if (isFindSource) {
-              dispatch(
-                sourceAddress(
-                  address.placeName || address.roadAddress || address.jibunAddress || '',
-                ),
-              );
+              dispatch(sourcePoint({ latitude: Number(address.y), longitude: Number(address.x) }));
+              console.log(address.placeName || address.roadAddress || address.jibunAddress || '');
+              navigation.navigate({
+                name: 'FindAddress',
+                params: { setFocusDestination: true },
+                merge: true,
+              });
             } else {
-              dispatch(
-                destinationAddress(
-                  address.placeName || address.roadAddress || address.jibunAddress || '',
-                ),
-              );
+              rootNavigation.navigate({
+                name: 'Home',
+                params: { findPath: true },
+                merge: true,
+              });
             }
-            navigation.navigate({
-              name: 'FindAddress',
-              params: { setFocusDestination: true },
-              merge: true,
-            });
           }}>
           <Text style={styles.buttonText}>{buttonTitle}</Text>
         </TouchableOpacity>

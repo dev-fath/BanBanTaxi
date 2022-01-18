@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { getDirections, loadGeocode } from '../../services/maps/naverMapApiService';
 import { AddressState } from '../../redux/maps/addressFindStore';
-import { direction, findSource } from '../../redux/maps/addressFindSlice';
+import { directions, findSource } from '../../redux/maps/addressFindSlice';
 
 import { IGeocodeResponse } from '../../interfaces/geocodeResponse';
 import { IDefaultScreenProps } from '../../interfaces/defaultScreenProps';
@@ -30,11 +30,13 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
   const handleClickButton = () => {
     return getDirections(url, start, goal).then((result) => {
       const directionCoords: Coord[] = directionsArrayToCoord(result);
-      dispatch(direction(directionCoords));
+      dispatch(directions(directionCoords));
     });
   };
-  const sourceAddress: string = useSelector((state: AddressState) => state.sourceAddress);
-  const destinationAddress: string = useSelector((state: AddressState) => state.destinationAddress);
+  const sourceAddress: string =
+    useSelector((state: AddressState) => state.sourceAddressObject.placeName) || '';
+  const destinationAddress: string =
+    useSelector((state: AddressState) => state.destinationAddressObject.placeName) || '';
 
   return (
     <View style={styles.container}>

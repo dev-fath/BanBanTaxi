@@ -1,17 +1,20 @@
 import React from 'react';
 import { FlatList, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { IAddresses } from '../../interfaces/geocodeResponse';
 import {
   destinationAddressObject,
+  destinationPoint,
   pinPoint,
   sourceAddressObject,
+  sourcePoint,
 } from '../../redux/maps/addressFindSlice';
 import { FindAddressScreenNavigationProp } from '../../@types/screenTypes';
+import { AddressState } from '../../redux/maps/addressFindStore';
 
-const AddressListComponent = (props: { addressList: IAddresses[]; isFindSource?: boolean }) => {
-  const isFindSource = !!props.isFindSource;
+const AddressListComponent = (props: { addressList: IAddresses[] }) => {
+  const isFindSource = useSelector((state: AddressState) => state.isFindSource);
   return (
     <View>
       <FlatList
@@ -29,10 +32,15 @@ const AddressItem = (props: { item: IAddresses; isFindSource: boolean }) => {
   return (
     <TouchableWithoutFeedback
       onPress={() => {
-        dispatch(pinPoint({ latitude: Number(props.item.y), longitude: Number(props.item.x) }));
         if (props.isFindSource) {
+          dispatch(
+            sourcePoint({ latitude: Number(props.item.y), longitude: Number(props.item.x) }),
+          );
           dispatch(sourceAddressObject(props.item));
         } else {
+          dispatch(
+            destinationPoint({ latitude: Number(props.item.y), longitude: Number(props.item.x) }),
+          );
           dispatch(destinationAddressObject(props.item));
         }
         navigation.navigate('FindAddressOnMap');

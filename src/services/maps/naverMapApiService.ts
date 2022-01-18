@@ -9,6 +9,9 @@ import {
 import { paramsToQueryString } from '../../utils/paramsToQueryString';
 import { HttpMethods } from '../apiService';
 import { KakaoSearchKeywordType } from '../../interfaces/geocodeResponse';
+import { useSelector } from 'react-redux';
+import { AddressState } from '../../redux/maps/addressFindStore';
+import * as url from 'url';
 
 const nmapKeyId = 'gudascnpd4';
 const nmapKey = 'sMXN9pmM2HJVr0GHQAIbkvkIjKqfZ8yn8HKIvUHd';
@@ -83,6 +86,27 @@ export const loadKakaoAddress = (
     queries,
   )}`;
   console.log(apiUrl);
+  return fetch(apiUrl, {
+    method: HttpMethods.GET,
+    mode: 'cors',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: kakaoAddressKey,
+    },
+    referrer: 'no-referrer',
+  });
+};
+
+export const loadKakaoCoordToAddress = (params: { x: string; y: string }) => {
+  const queries = {
+    x: params.x,
+    y: params.y,
+  };
+  const apiUrl = `https://dapi.kakao.com/v2/local/geo/coord2address.json${paramsToQueryString(
+    queries,
+  )}`;
+
   return fetch(apiUrl, {
     method: HttpMethods.GET,
     mode: 'cors',

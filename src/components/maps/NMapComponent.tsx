@@ -4,17 +4,34 @@ import NaverMapView, { Coord } from 'react-native-nmap';
 import { useDispatch, useSelector } from 'react-redux';
 import Geolocation from '@react-native-community/geolocation';
 
-import { destinationAddress, pinPoint, sourceAddress } from '../../redux/maps/addressFindSlice';
+import {
+  destinationAddressObject,
+  pinPoint,
+  sourceAddressObject,
+} from '../../redux/maps/addressFindSlice';
 
 import markerImage from '../../../assets/mapMarker.png';
-import { loadReverseGeocode } from '../../services/maps/naverMapApiService';
-import { ILand, IReverseGeocodeResponse } from '../../interfaces/geocodeResponse';
+import { getDirections, loadReverseGeocode } from '../../services/maps/naverMapApiService';
+import { IAddresses, ILand, IReverseGeocodeResponse } from '../../interfaces/geocodeResponse';
 import { AddressState } from '../../redux/maps/addressFindStore';
+import { OptionCode } from '../../interfaces/geoPosition.interface';
 
-function BanBanMap(props: { searchLocation?: Coord }) {
+function BanBanMap(props: { searchLocation?: Coord; findPath?: boolean }) {
   const dispatch = useDispatch();
+  const sourcePoint = useSelector((state: AddressState) => state.sourcePoint);
+  const destinationPoint = useSelector((state: AddressState) => state.destinationPoint);
+  // if (props.findPath) {
+  //   void getDirections(
+  //     '',
+  //     { latitude: sourcePoint.latitude, longitude: sourcePoint.longitude },
+  //     { latitude: destinationPoint.latitude, longitude: destinationPoint.longitude },
+  //     OptionCode.traoptimal,
+  //   ).then((directions) => {
+  //     console.log(directions);
+  //   });
+  // }
   const isFindSource = true;
-  const direction = useSelector((state: AddressState) => state.direction);
+  const direction = useSelector((state: AddressState) => state.directions);
   let pin: Coord;
   if (props.searchLocation) {
     pin = props.searchLocation;
@@ -52,9 +69,18 @@ function BanBanMap(props: { searchLocation?: Coord }) {
           console.log('목적지 정보 없음');
           return;
         }
+        const addressData = data.results[0];
+        const addressObject: IAddresses = {
+          x: longitude.toString(),
+          y: latitude.toString(),
+          roadAddress: `${addressData.region.area1.name} ${addressData.region.area2.name} ${addressData.region.area3.name} ${addressData.land.name} ${addressData.land.number1} ${addressData.land.number2}`,
+          placeName: addressData.land.addition0.value,
+        };
+        console.log(data.results);
+        // data.results
         isFindSource
-          ? dispatch(sourceAddress(getTargetName(data?.results[0]?.land)))
-          : dispatch(destinationAddress(getTargetName(data?.results[0]?.land)));
+          ? dispatch(sourceAddressObject(addressObject))
+          : dispatch(destinationAddressObject(addressObject));
       });
   };
 
