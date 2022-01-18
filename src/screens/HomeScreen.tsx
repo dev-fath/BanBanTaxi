@@ -13,7 +13,7 @@ function HomeScreen({ navigation, route }: IDefaultScreenProps) {
     <SafeAreaView style={{ width: '100%', height: '100%' }}>
       <Provider store={addressFindStore}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <BanBanMap findPath={!!route?.params?.findPath} />
+          <BanBanMap findPath={route?.params?.findPath} />
           <MenuButton navigation={navigation} />
           <JourneySettingComponent navigation={navigation} />
         </View>

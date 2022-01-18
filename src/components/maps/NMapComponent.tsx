@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Image, View } from 'react-native';
-import NaverMapView, { Coord } from 'react-native-nmap';
+import NaverMapView, { Coord, Path } from 'react-native-nmap';
 import { useDispatch, useSelector } from 'react-redux';
 import Geolocation from '@react-native-community/geolocation';
 
@@ -12,26 +12,52 @@ import {
 
 import markerImage from '../../../assets/mapMarker.png';
 import { getDirections, loadReverseGeocode } from '../../services/maps/naverMapApiService';
-import { IAddresses, ILand, IReverseGeocodeResponse } from '../../interfaces/geocodeResponse';
+import { IAddresses, IReverseGeocodeResponse } from '../../interfaces/geocodeResponse';
 import { AddressState } from '../../redux/maps/addressFindStore';
-import { OptionCode } from '../../interfaces/geoPosition.interface';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { DefaultScreenNavigationProp } from '../../@types/screenTypes';
 
 function BanBanMap(props: { searchLocation?: Coord; findPath?: boolean }) {
+  const navigation: DefaultScreenNavigationProp = useNavigation();
   const dispatch = useDispatch();
-  const sourcePoint = useSelector((state: AddressState) => state.sourcePoint);
-  const destinationPoint = useSelector((state: AddressState) => state.destinationPoint);
-  // if (props.findPath) {
-  //   void getDirections(
-  //     '',
-  //     { latitude: sourcePoint.latitude, longitude: sourcePoint.longitude },
-  //     { latitude: destinationPoint.latitude, longitude: destinationPoint.longitude },
-  //     OptionCode.traoptimal,
-  //   ).then((directions) => {
-  //     console.log(directions);
-  //   });
-  // }
+  const [direction, setDirection] = useState([
+    { latitude: 37.378595, longitude: 127.112724 },
+    { latitude: 37.378595, longitude: 127.112724 },
+  ]);
+  const startPoint: Coord = {
+    latitude: Number(useSelector((state: AddressState) => state.sourceAddressObject.y)),
+    longitude: Number(useSelector((state: AddressState) => state.sourceAddressObject.x)),
+  };
+  const endPoint: Coord = {
+    latitude: Number(useSelector((state: AddressState) => state.destinationAddressObject.y)),
+    longitude: Number(useSelector((state: AddressState) => state.destinationAddressObject.x)),
+  };
+  const findPath = () => {
+    if (!props.findPath) {
+      return;
+    }
+    const directionsArrayToCoord = (directionArray: null | [[number, number]]) => {
+      if (!directionArray) {
+        return [
+          {
+            latitude: useSelector((state: AddressState) => state.centerPoint.latitude),
+            longitude: useSelector((state: AddressState) => state.centerPoint.longitude),
+          },
+        ] as Coord[];
+      }
+      return directionArray.map((direction) => {
+        return { latitude: direction[1], longitude: direction[0] } as Coord;
+      });
+    };
+
+    void getDirections(startPoint, endPoint).then((result) => {
+      const directionCoords: Coord[] = directionsArrayToCoord(result);
+      setDirection(directionCoords);
+    });
+    navigation.setParams({ findPath: false });
+  };
+
   const isFindSource = true;
-  const direction = useSelector((state: AddressState) => state.directions);
   let pin: Coord;
   if (props.searchLocation) {
     pin = props.searchLocation;
@@ -55,7 +81,7 @@ function BanBanMap(props: { searchLocation?: Coord; findPath?: boolean }) {
     });
   };
   useEffect(getMyLocation, []);
-
+  useFocusEffect(useCallback(findPath, [props.findPath]));
   const getAddressFromPoint = (coord: Coord) => {
     const { latitude, longitude }: Coord = coord;
     void loadReverseGeocode({
@@ -84,13 +110,6 @@ function BanBanMap(props: { searchLocation?: Coord; findPath?: boolean }) {
       });
   };
 
-  const getTargetName = (land: ILand) => {
-    if (land?.addition0?.value !== '') {
-      return `${land?.addition0?.value}`;
-    } else {
-      return `${land.name} ${land.number1} ${land.number2}`;
-    }
-  };
   return (
     <View
       style={{
@@ -127,12 +146,12 @@ function BanBanMap(props: { searchLocation?: Coord; findPath?: boolean }) {
           const { latitude, longitude }: Coord = e;
           getAddressFromPoint({ latitude, longitude });
         }}>
-        {/*<Path*/}
-        {/*  coordinates={direction}*/}
-        {/*  onClick={() => console.warn('onClick! path')}*/}
-        {/*  width={10}*/}
-        {/*  color={'#00FF00'}*/}
-        {/*/>*/}
+        <Path
+          coordinates={direction}
+          onClick={() => console.warn('onClick! path')}
+          width={10}
+          color={'#00FF00'}
+        />
       </NaverMapView>
     </View>
   );

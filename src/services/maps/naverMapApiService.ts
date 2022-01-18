@@ -9,20 +9,18 @@ import {
 import { paramsToQueryString } from '../../utils/paramsToQueryString';
 import { HttpMethods } from '../apiService';
 import { KakaoSearchKeywordType } from '../../interfaces/geocodeResponse';
-import { useSelector } from 'react-redux';
-import { AddressState } from '../../redux/maps/addressFindStore';
-import * as url from 'url';
 
 const nmapKeyId = 'gudascnpd4';
 const nmapKey = 'sMXN9pmM2HJVr0GHQAIbkvkIjKqfZ8yn8HKIvUHd';
 const kakaoAddressKey = 'KakaoAK cefcf6e78a97c76f8525a8ff50a8d6d7';
 
 export function getDirections(
-  url = 'https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving',
   start: Coord,
   goal: Coord,
   searchOption: OptionCode = OptionCode.traoptimal,
 ) {
+  console.log('calls');
+  const url = 'https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving';
   return fetch(
     `${url}?start=${start.longitude},${start.latitude}&goal=${goal.longitude},${goal.latitude}&option=${searchOption}`,
     {
