@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AddressState } from '../../redux/maps/addressFindStore';
 import { sourcePoint } from '../../redux/maps/addressFindSlice';
@@ -9,6 +8,7 @@ import {
   DefaultScreenNavigationProp,
   FindAddressScreenNavigationProp,
 } from '../../@types/screenTypes';
+import styled, { css } from 'styled-components/native';
 
 const SettingPoint = () => {
   const dispatch = useDispatch();
@@ -19,77 +19,76 @@ const SettingPoint = () => {
     ? useSelector((state: AddressState) => state.sourceAddressObject)
     : useSelector((state: AddressState) => state.destinationAddressObject);
   const buttonTitle = `${isFindSource ? '출발지' : '목적지'}로 설정하기`;
+  const handleClickSettingButton = () => {
+    if (isFindSource) {
+      dispatch(sourcePoint({ latitude: Number(address.y), longitude: Number(address.x) }));
+      navigation.navigate({
+        name: 'FindAddress',
+        params: { setFocusDestination: true },
+        merge: true,
+      });
+    } else {
+      rootNavigation.navigate({
+        name: 'Home',
+        params: { findPath: true },
+        merge: true,
+      });
+    }
+  };
   return (
-    <SafeAreaView style={styles.safeAreaView}>
-      <View style={styles.settingContainer}>
-        <Text style={styles.title}>{address.placeName || address.roadAddress}</Text>
-        <Text style={styles.subTitle}>
-          {address.placeName ? address.roadAddress : address.jibunAddress}
-        </Text>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            if (isFindSource) {
-              dispatch(sourcePoint({ latitude: Number(address.y), longitude: Number(address.x) }));
-              console.log(address.placeName || address.roadAddress || address.jibunAddress || '');
-              navigation.navigate({
-                name: 'FindAddress',
-                params: { setFocusDestination: true },
-                merge: true,
-              });
-            } else {
-              rootNavigation.navigate({
-                name: 'Home',
-                params: { findPath: true },
-                merge: true,
-              });
-            }
-          }}>
-          <Text style={styles.buttonText}>{buttonTitle}</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+    <Container>
+      <FieldWrapper>
+        <Title>{address.placeName || address.roadAddress}</Title>
+        <SubTitle>{address.placeName ? address.roadAddress : address.jibunAddress}</SubTitle>
+        <SettingButton onPress={handleClickSettingButton}>
+          <ButtonText>{buttonTitle}</ButtonText>
+        </SettingButton>
+      </FieldWrapper>
+    </Container>
   );
 };
 
-const styles = StyleSheet.create({
-  safeAreaView: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    height: '30%',
-  },
-  settingContainer: {
-    backgroundColor: 'white',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    padding: 16,
-    height: '100%',
-  },
-  title: {
-    paddingBottom: 12,
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  subTitle: {
-    paddingBottom: 12,
-    fontSize: 14,
-    color: '#aaa',
-    fontWeight: '500',
-  },
-  button: {
-    display: 'flex',
-    height: 56,
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#0F0',
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: '500',
-  },
-});
+const Container = styled.SafeAreaView`
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 30%;
+`;
+const FieldWrapper = styled.View`
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 16px;
+  height: 100%;
+`;
+const paddingBottom = css`
+  padding-bottom: 12px;
+`;
+const Title = styled.Text`
+  ${paddingBottom};
+  font-size: 18px;
+  font-weight: 600;
+`;
+
+const SubTitle = styled.Text`
+  ${paddingBottom};
+  font-size: 14px;
+  color: #aaa;
+  font-weight: 500;
+`;
+
+const SettingButton = styled.TouchableOpacity`
+  display: flex;
+  height: 56px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: #0f0;
+`;
+const ButtonText = styled.Text`
+  font-size: 18px;
+  font-weight: 500;
+`;
 
 export default SettingPoint;
