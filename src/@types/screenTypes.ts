@@ -5,7 +5,7 @@ import {
 import { RouteProp } from '@react-navigation/native';
 
 export type RootStackParamList = {
-  Home: undefined;
+  Home: { findPath: boolean };
   Menu: undefined;
   FindAddressNavigator: undefined;
 };
@@ -15,7 +15,7 @@ export type DefaultScreenNavigationProp = NativeStackNavigationProp<RootStackPar
 export type DefaultScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
 
 export type FindAddressStackParamList = {
-  FindAddress: undefined;
+  FindAddress: { setFocusDestination?: boolean; fromMyLocation?: boolean };
   FindAddressOnMap: undefined;
 };
 

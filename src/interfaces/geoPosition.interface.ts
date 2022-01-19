@@ -1,3 +1,5 @@
+import { Coord } from 'react-native-nmap/index';
+import { CoordinateSystemType } from './geocodeResponse';
 
 export interface IDirectionResponse {
   code: number;
@@ -149,3 +151,40 @@ const GuideCode = {
 } as const;
 
 type GuideCodeType = typeof GuideCode[keyof typeof GuideCode];
+
+export interface IReverseGeocodeParams {
+  request?: 'coordsToaddr';
+  coords: Coord;
+  sourcecrs?: CoordinateSystemType;
+  targetcrs?: CoordinateSystemType;
+  orders?: ('legalcode' | 'admcode' | 'addr' | 'roadaddr')[];
+  output?: 'json' | 'xml';
+  callback?: 'string';
+}
+
+export interface IGeocodeParams {
+  query: string; // 네이버지도 검색어
+  coordinate?: string | unknown;
+  filter?: string;
+  page?: number;
+  count?: number;
+  analyzeType?: AnalyzeType;
+  x?: number;
+  y?: number;
+  sort?: string;
+}
+export const AnalyzeTypes = {
+  similar: 'similar',
+  exact: 'exact',
+} as const;
+type AnalyzeType = typeof AnalyzeTypes[keyof typeof AnalyzeTypes];
+
+export interface IKakaoQueryParams {
+  query: string;
+  analyze_type?: AnalyzeType;
+  page?: number;
+  size?: number;
+  x?: number;
+  y?: number;
+  sort?: string;
+}

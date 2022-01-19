@@ -8,13 +8,12 @@ import MenuButton from '../components/common/MenuButton';
 import { addressFindStore } from '../redux/maps/addressFindStore';
 import JourneySettingComponent from '../components/JourneySettingContainer/JourneySettingComponent';
 
-function HomeScreen({ navigation }: IDefaultScreenProps) {
-  //TODO : 내 현재 위치 가져오기
+function HomeScreen({ navigation, route }: IDefaultScreenProps) {
   return (
     <SafeAreaView style={{ width: '100%', height: '100%' }}>
       <Provider store={addressFindStore}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <BanBanMap />
+          <BanBanMap findPath={route?.params?.findPath} />
           <MenuButton navigation={navigation} />
           <JourneySettingComponent navigation={navigation} />
         </View>

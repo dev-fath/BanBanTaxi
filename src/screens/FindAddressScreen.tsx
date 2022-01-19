@@ -1,27 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { IFindAddressScreenProps } from '../interfaces/defaultScreenProps';
+import { AddressState } from '../redux/maps/addressFindStore';
+import { IAddresses } from '../interfaces/geocodeResponse';
+import AddressListComponent from '../components/findAddress/AddressList';
+import { findSource } from '../redux/maps/addressFindSlice';
+import _ from 'lodash';
+import loadAddresses from '../services/maps/loadAddressService';
 
 const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
+  const dispatch = useDispatch();
+  const sourceAddressObject = useSelector((state: AddressState) => state.sourceAddressObject);
+  const destinationAddressObject = useSelector(
+    (state: AddressState) => state.destinationAddressObject,
+  );
+  const searchKeywordDebounce = _.debounce(loadAddresses, 250);
+  const centerLocation = useSelector((state: AddressState) => state.centerPoint);
+  const [addressList, setAddressList] = useState<IAddresses[]>([]);
   return (
     <View style={{ backgroundColor: 'white', height: '100%' }}>
       <View style={{ ...styles.inputContainer, marginTop: 24 }}>
         <TextInput
+          returnKeyType={'search'}
           style={styles.textInput}
           placeholder={'[출발지] 검색해주세요'}
-          onTextInput={(e) => {
-            //TODO : 주소 찾아와서 setState
-            console.log(e);
+          defaultValue={sourceAddressObject.placeName || ''}
+          onChangeText={(text) => {
+            searchKeywordDebounce(text, centerLocation, setAddressList);
+          }}
+          onFocus={() => {
+            dispatch(findSource(true));
+          }}
+          onBlur={() => {
+            setAddressList([]);
           }}
         />
         <TextInput
+          returnKeyType={'search'}
           style={styles.textInput}
           placeholder={'[목적지] 검색해주세요'}
-          onTextInput={(e) => {
-            //TODO : 주소 찾아와서 setState
-            console.log(e);
+          defaultValue={destinationAddressObject.placeName || ''}
+          onChangeText={(text) => {
+            searchKeywordDebounce(text, centerLocation, setAddressList);
+          }}
+          onFocus={() => {
+            dispatch(findSource(false));
+          }}
+          onBlur={() => {
+            setAddressList([]);
           }}
         />
       </View>
@@ -40,7 +69,7 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
             </View>
           </TouchableWithoutFeedback>
         </View>
-        <View style={styles.shortCutWithTextContainer}>
+        <View style={styles.shortCutWithoutTextContainer}>
           <View style={styles.rightBar}>
             <TouchableWithoutFeedback
               onPress={() => {
@@ -60,10 +89,10 @@ const FindAddressScreen = ({ navigation }: IFindAddressScreenProps) => {
           </TouchableWithoutFeedback>
         </View>
       </View>
+      <AddressListComponent addressList={addressList} />
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   inputContainer: {
     display: 'flex',
@@ -102,7 +131,7 @@ const styles = StyleSheet.create({
     flexWrap: 'nowrap',
   },
   shortCutWithText: { display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', marginRight: 16 },
-  shortCutWithoutContainer: {
+  shortCutWithoutTextContainer: {
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'nowrap',

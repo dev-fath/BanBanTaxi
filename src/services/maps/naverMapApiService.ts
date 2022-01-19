@@ -1,18 +1,26 @@
 import { Coord } from 'react-native-nmap/index';
-import { IDirectionResponse, OptionCode } from '../../interfaces/geoPosition.interface';
+import {
+  IDirectionResponse,
+  IGeocodeParams,
+  IKakaoQueryParams,
+  IReverseGeocodeParams,
+  OptionCode,
+} from '../../interfaces/geoPosition.interface';
 import { paramsToQueryString } from '../../utils/paramsToQueryString';
-import { CoordinateSystemType } from '../../interfaces/geocodeResponse';
 import { HttpMethods } from '../apiService';
+import { KakaoSearchKeywordType } from '../../interfaces/geocodeResponse';
 
 const nmapKeyId = 'gudascnpd4';
 const nmapKey = 'sMXN9pmM2HJVr0GHQAIbkvkIjKqfZ8yn8HKIvUHd';
+const kakaoAddressKey = 'KakaoAK cefcf6e78a97c76f8525a8ff50a8d6d7';
 
 export function getDirections(
-  url = 'https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving',
   start: Coord,
   goal: Coord,
   searchOption: OptionCode = OptionCode.traoptimal,
 ) {
+  console.log('calls');
+  const url = 'https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving';
   return fetch(
     `${url}?start=${start.longitude},${start.latitude}&goal=${goal.longitude},${goal.latitude}&option=${searchOption}`,
     {
@@ -57,13 +65,57 @@ export const loadGeocode = (params: IGeocodeParams) => {
   });
 };
 
-interface IGeocodeParams {
-  keyword: string;
-  coordinate?: string | unknown;
-  filter?: string;
-  page?: number;
-  count?: number;
-}
+export const loadKakaoAddress = (
+  requestType: KakaoSearchKeywordType = 'keyword',
+  params: IGeocodeParams,
+) => {
+  const queries: IKakaoQueryParams = {
+    analyze_type: params.analyzeType || 'similar',
+    query: params.query,
+    page: params.page || 1,
+    x: params.x,
+    y: params.y,
+    size: params.count,
+  };
+  // const apiUrl = `https://dapi.kakao.com/v2/local/search/address.json${paramsToQueryString(
+  //   queries,
+  // )}`;
+  const apiUrl = `https://dapi.kakao.com/v2/local/search/${requestType}.json${paramsToQueryString(
+    queries,
+  )}`;
+  console.log(apiUrl);
+  return fetch(apiUrl, {
+    method: HttpMethods.GET,
+    mode: 'cors',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: kakaoAddressKey,
+    },
+    referrer: 'no-referrer',
+  });
+};
+
+export const loadKakaoCoordToAddress = (params: { x: string; y: string }) => {
+  const queries = {
+    x: params.x,
+    y: params.y,
+  };
+  const apiUrl = `https://dapi.kakao.com/v2/local/geo/coord2address.json${paramsToQueryString(
+    queries,
+  )}`;
+
+  return fetch(apiUrl, {
+    method: HttpMethods.GET,
+    mode: 'cors',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: kakaoAddressKey,
+    },
+    referrer: 'no-referrer',
+  });
+};
 
 export const loadReverseGeocode = (params: IReverseGeocodeParams) => {
   const queries = { ...params, coords: `${params.coords.longitude},${params.coords.latitude}` };
@@ -83,13 +135,3 @@ export const loadReverseGeocode = (params: IReverseGeocodeParams) => {
     referrer: 'no-referrer',
   });
 };
-
-interface IReverseGeocodeParams {
-  request?: 'coordsToaddr';
-  coords: Coord;
-  sourcecrs?: CoordinateSystemType;
-  targetcrs?: CoordinateSystemType;
-  orders?: ('legalcode' | 'admcode' | 'addr' | 'roadaddr')[];
-  output?: 'json' | 'xml';
-  callback?: 'string';
-}
