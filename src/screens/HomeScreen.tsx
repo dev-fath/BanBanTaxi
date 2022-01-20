@@ -1,25 +1,35 @@
 import * as React from 'react';
-import { View, SafeAreaView } from 'react-native';
 import { Provider } from 'react-redux';
+import styled from 'styled-components/native';
 
 import BanBanMap from '../components/maps/NMapComponent';
-import { IDefaultScreenProps } from '../interfaces/defaultScreenProps';
 import MenuButton from '../components/common/MenuButton';
-import { addressFindStore } from '../redux/maps/addressFindStore';
 import JourneySettingComponent from '../components/JourneySettingContainer/JourneySettingComponent';
+import { IDefaultScreenProps } from '../interfaces/defaultScreenProps';
+import { addressFindStore } from '../redux/maps/addressFindStore';
 
-function HomeScreen({ navigation, route }: IDefaultScreenProps) {
+function HomeScreen({ route }: IDefaultScreenProps) {
   return (
-    <SafeAreaView style={{ width: '100%', height: '100%' }}>
+    <Screen>
       <Provider store={addressFindStore}>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Container>
           <BanBanMap findPath={route?.params?.findPath} />
-          <MenuButton navigation={navigation} />
-          <JourneySettingComponent navigation={navigation} />
-        </View>
+          <MenuButton />
+          <JourneySettingComponent />
+        </Container>
       </Provider>
-    </SafeAreaView>
+    </Screen>
   );
 }
+
+const Screen = styled.SafeAreaView`
+  width: 100%;
+  height: 100%;
+`;
+const Container = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
 
 export default HomeScreen;

@@ -1,30 +1,30 @@
-import { TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import React from 'react';
-import { IDefaultScreenProps } from '../../interfaces/defaultScreenProps';
+import styled from 'styled-components/native';
+import { useNavigation } from '@react-navigation/native';
 
-const MenuButton = ({ navigation }: IDefaultScreenProps) => {
+import { DefaultScreenNavigationProp } from '../../@types/screenTypes';
+
+const MenuButton = () => {
+  const navigation: DefaultScreenNavigationProp = useNavigation();
   return (
-    <TouchableOpacity
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'absolute',
-        borderColor: 'black',
-        borderStyle: 'solid',
-        borderRadius: 50,
-        width: 50,
-        height: 50,
-        borderWidth: 2,
-        top: 16,
-        left: 16,
-        backgroundColor: '#ccc',
-      }}
-      onPress={() => navigation.navigate('Menu')}>
+    <CircleButton onPress={() => navigation.navigate('Menu')}>
       <Icon name="grid-outline" size={25} />
-    </TouchableOpacity>
+    </CircleButton>
   );
 };
 
+const CircleButton = styled.TouchableOpacity`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  border: solid 2px black;
+  border-radius: 25px;
+  width: 50px;
+  height: 50px;
+  top: 16px;
+  left: 16px;
+  background-color: #ccc;
+`;
 export default MenuButton;

@@ -1,15 +1,16 @@
 import React from 'react';
-
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import styled from 'styled-components/native';
+import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { AddressState } from '../../redux/maps/addressFindStore';
 import { findSource } from '../../redux/maps/addressFindSlice';
+import { DefaultScreenNavigationProp } from '../../@types/screenTypes';
+import Taxi from '../../../assets/Taxi.png';
 
-import { IDefaultScreenProps } from '../../interfaces/defaultScreenProps';
-
-const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
+const JourneySettingComponent = () => {
+  const navigation: DefaultScreenNavigationProp = useNavigation();
   const dispatch = useDispatch();
   const sourceAddress: string =
     useSelector((state: AddressState) => state.sourceAddressObject.placeName) || '';
@@ -17,91 +18,93 @@ const JourneySettingComponent = ({ navigation }: IDefaultScreenProps) => {
     useSelector((state: AddressState) => state.destinationAddressObject.placeName) || '';
 
   return (
-    <View style={styles.container}>
-      <View style={styles.wrapper}>
-        <TouchableOpacity
-          style={styles.sourceButton}
+    <Container>
+      <Wrapper>
+        <IntroduceIcon onPress={() => navigation.navigate('Introduce')}>
+          <TaxiImage source={Taxi} />
+        </IntroduceIcon>
+        <SourceArea
           onPress={() => {
             dispatch(findSource(true));
             navigation.navigate('FindAddressNavigator');
           }}>
-          <Text style={styles.sourceButtonText}>{sourceAddress}</Text>
-          {/*<MyLocationButton />*/}
-          {/*<TouchableWithoutFeedback>*/}
-          {/*  <Icon name={'locate-outline'} size={18} />*/}
-          {/*</TouchableWithoutFeedback>*/}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.destinationButton}
+          <AreaText>{sourceAddress}</AreaText>
+          <AreaIcon name="locate-outline" size={18} />
+        </SourceArea>
+        <DestinationArea
           onPress={() => {
             dispatch(findSource(false));
             navigation.navigate('FindAddressNavigator');
           }}>
-          <Text style={styles.destinationButtonText}>
-            {destinationAddress || '어디로 모실까요?'}
-          </Text>
-          <Icon style={styles.destinationButtonIcon} name={'arrow-forward-outline'} size={18} />
-        </TouchableOpacity>
-      </View>
-    </View>
+          <AreaText highlightColor={true}>{destinationAddress || '어디로 모실까요?'}</AreaText>
+          <AreaIcon highlightColor={true} name={'arrow-forward-outline'} size={18} />
+        </DestinationArea>
+      </Wrapper>
+    </Container>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    minHeight: 150,
-    height: '30%',
-    paddingLeft: 24,
-    paddingRight: 24,
-    backgroundColor: 'white',
-    borderTopRightRadius: 50,
-    borderTopLeftRadius: 50,
-    borderTopStartRadius: 50,
-    borderTopEndRadius: 50,
-  },
-  wrapper: {
-    display: 'flex',
-    width: '100%',
-    height: '100%',
-    flexDirection: 'column',
-    flexWrap: 'nowrap',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sourceButton: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    paddingLeft: 16,
-    paddingRight: 16,
-    height: 56,
-  },
-  sourceButtonText: {
-    fontSize: 18,
-  },
-  destinationButton: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    paddingLeft: 16,
-    paddingRight: 16,
-    backgroundColor: 'black',
-    height: 56,
-  },
-  destinationButtonText: {
-    fontSize: 18,
-    color: '#00FF00',
-  },
-  destinationButtonIcon: {
-    color: '#00FF00',
-  },
-});
+const Container = styled.View`
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  min-height: 150px;
+  height: 30%;
+  padding: 0 24px;
+  background-color: white;
+  border-radius: 50px;
+`;
+
+const Wrapper = styled.View`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+`;
+
+const SourceArea = styled.TouchableOpacity`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 16px;
+  height: 56px;
+`;
+
+const AreaText = styled.Text`
+  font-size: 18px;
+  color: ${(props: { highlightColor?: boolean }) => (props.highlightColor ? '#0F0' : '#000')};
+`;
+
+const DestinationArea = styled.TouchableOpacity`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 16px;
+  height: 56px;
+  background-color: black;
+`;
+
+const AreaIcon = styled(Icon)`
+  color: ${(props: { highlightColor?: boolean }) => (props.highlightColor ? '#0F0' : '#000')};
+`;
+
+const IntroduceIcon = styled.TouchableWithoutFeedback`
+  position: absolute;
+  right: 0;
+`;
+
+const TaxiImage = styled.Image`
+  position: absolute;
+  right: 0;
+  top: -25px;
+  width: 100px;
+  height: 50px;
+`;
 
 export default JourneySettingComponent;

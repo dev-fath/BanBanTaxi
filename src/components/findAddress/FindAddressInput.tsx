@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, TextInput } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
+import styled from 'styled-components/native';
+
 import { IAddresses } from '../../interfaces/geocodeResponse';
 import { AddressState } from '../../redux/maps/addressFindStore';
 import { findSource } from '../../redux/maps/addressFindSlice';
@@ -21,9 +22,8 @@ const FindTargetTextInputComponent = (props: {
   const searchKeywordDebounce = _.debounce(loadAddresses, 250);
   //TODO : ref 설정해서 엔터키 입력하면 목적지 설정으로 이동
   return (
-    <TextInput
+    <Input
       returnKeyType={'search'}
-      style={styles.textInput}
       placeholder={props.placeholder}
       defaultValue={
         props.isFindSource ? sourceAddressObject.placeName : destinationAddressObject.placeName
@@ -42,18 +42,16 @@ const FindTargetTextInputComponent = (props: {
 };
 React.memo(FindTargetTextInputComponent);
 
-const styles = StyleSheet.create({
-  textInput: {
-    height: 50,
-    fontSize: 16,
-    backgroundColor: 'white',
-    marginTop: 8,
-    paddingLeft: 16,
-    borderRadius: 50,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    width: '90%',
-  },
-});
+const Input = styled.TextInput`
+  height: 50px;
+  font-size: 16px;
+  background-color: white;
+  margin-top: 8px;
+  padding-left: 16px;
+  border-radius: 50px;
+  border-width: 1px;
+  border-color: #ccc;
+  width: 90%;
+`;
 
 export default FindTargetTextInputComponent;

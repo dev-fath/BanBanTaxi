@@ -1,14 +1,14 @@
 import React from 'react';
 import _ from 'lodash';
+import styled from 'styled-components/native';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import NaverMapView, { Coord } from 'react-native-nmap/index';
 
 import BackButton from '../components/common/backButton';
 import { IFindAddressScreenProps } from '../interfaces/defaultScreenProps';
-import { Provider, useDispatch, useSelector } from 'react-redux';
 import { addressFindStore, AddressState } from '../redux/maps/addressFindStore';
 import SettingPoint from '../components/findAddress/SettingPoint';
-import { Image, StyleSheet, View } from 'react-native';
 import markerImage from '../../assets/mapMarker.png';
-import NaverMapView, { Coord } from 'react-native-nmap/index';
 import {
   destinationAddressObject,
   destinationPoint,
@@ -17,6 +17,7 @@ import {
 } from '../redux/maps/addressFindSlice';
 import { loadReverseGeocode } from '../services/maps/naverMapApiService';
 import { IAddresses, IReverseGeocodeResponse } from '../interfaces/geocodeResponse';
+
 const FindAddressOnMapScreen = ({ navigation }: IFindAddressScreenProps) => {
   const handleClickBackButton = () => {
     navigation.goBack();
@@ -37,7 +38,6 @@ const FindAddressOnMapScreen = ({ navigation }: IFindAddressScreenProps) => {
       .then<IReverseGeocodeResponse>((response) => response.json())
       .then((data) => {
         if (data.status.code === 3) {
-          console.log('목적지 정보 없음');
           return;
         }
         const addressData = data.results[0];
@@ -47,7 +47,6 @@ const FindAddressOnMapScreen = ({ navigation }: IFindAddressScreenProps) => {
           roadAddress: `${addressData.region.area1.name} ${addressData.region.area2.name} ${addressData.region.area3.name} ${addressData.land.name} ${addressData.land.number1} ${addressData.land.number2}`,
           placeName: addressData.land.addition0.value,
         };
-        console.log(data.results);
         // data.results
         isFindSource
           ? dispatch(sourceAddressObject(addressObject))
@@ -58,9 +57,9 @@ const FindAddressOnMapScreen = ({ navigation }: IFindAddressScreenProps) => {
   return (
     <>
       <Provider store={addressFindStore}>
-        <View style={styles.container}>
-          <Image style={styles.image} source={markerImage} />
-          <NaverMapView
+        <Container>
+          <CenterMarker source={markerImage} />
+          <StyledNaverMapView
             style={{
               width: '100%',
               height: '80%',
@@ -72,7 +71,6 @@ const FindAddressOnMapScreen = ({ navigation }: IFindAddressScreenProps) => {
             mapPadding={{ bottom: 60 }}
             center={{ ...pinPoint, zoom: 16 }}
             onCameraChange={(e) => {
-              console.log(e);
               const { latitude, longitude }: Coord = e;
               getAddressFromPoint({ latitude, longitude });
               pinPoint = { latitude, longitude };
@@ -87,7 +85,7 @@ const FindAddressOnMapScreen = ({ navigation }: IFindAddressScreenProps) => {
               }
             }}
           />
-        </View>
+        </Container>
         <SettingPoint />
       </Provider>
       <BackButton onClick={handleClickBackButton} />
@@ -95,23 +93,25 @@ const FindAddressOnMapScreen = ({ navigation }: IFindAddressScreenProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    // justifyContent: 'flex-start',
-    // alignContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%',
-  },
-  image: {
-    position: 'absolute',
-    top: '35%',
-    transform: [{ translateY: -28 }],
-    alignContent: 'center',
-    width: 20,
-    height: 32,
-    zIndex: 1,
-  },
-});
+const Container = styled.View`
+  align-items: center;
+  width: 100%;
+  height: 100%;
+`;
+
+const CenterMarker = styled.Image`
+  position: absolute;
+  top: 35%;
+  transform: translateY(-28px);
+  align-content: center;
+  width: 20px;
+  height: 32px;
+  z-index: 1;
+`;
+
+const StyledNaverMapView = styled(NaverMapView)`
+  width: 100%;
+  height: 80%;
+`;
 
 export default FindAddressOnMapScreen;

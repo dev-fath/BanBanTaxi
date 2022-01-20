@@ -1,9 +1,10 @@
+import React from 'react';
+import { Provider } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import { FindAddressStackParamList } from '../@types/screenTypes';
 import FindAddressScreen from '../screens/FindAddressScreen';
 import FindAddressOnMapScreen from '../screens/FindAddressOnMap';
-import React from 'react';
-import { Provider } from 'react-redux';
 import { addressFindStore } from '../redux/maps/addressFindStore';
 
 export const FindAddressNavigator = () => {

@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Image, View } from 'react-native';
 import NaverMapView, { Coord, Path } from 'react-native-nmap';
 import { useDispatch, useSelector } from 'react-redux';
 import Geolocation from '@react-native-community/geolocation';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import styled from 'styled-components/native';
 
 import {
   destinationAddressObject,
@@ -14,7 +15,6 @@ import markerImage from '../../../assets/mapMarker.png';
 import { getDirections, loadReverseGeocode } from '../../services/maps/naverMapApiService';
 import { IAddresses, IReverseGeocodeResponse } from '../../interfaces/geocodeResponse';
 import { AddressState } from '../../redux/maps/addressFindStore';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { DefaultScreenNavigationProp } from '../../@types/screenTypes';
 
 function BanBanMap(props: { searchLocation?: Coord; findPath?: boolean }) {
@@ -111,31 +111,9 @@ function BanBanMap(props: { searchLocation?: Coord; findPath?: boolean }) {
   };
 
   return (
-    <View
-      style={{
-        // justifyContent: 'flex-start',
-        // alignContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-        height: '100%',
-      }}>
-      <Image
-        style={{
-          position: 'absolute',
-          top: '35%',
-          transform: [{ translateY: -28 }],
-          alignContent: 'center',
-          width: 20,
-          height: 32,
-          zIndex: 1,
-        }}
-        source={markerImage}
-      />
-      <NaverMapView
-        style={{
-          width: '100%',
-          height: '80%',
-        }}
+    <Container>
+      <CenterMarker source={markerImage} />
+      <StyledNaverMapView
         zoomControl={true}
         maxZoomLevel={20}
         minZoomLevel={7}
@@ -152,9 +130,30 @@ function BanBanMap(props: { searchLocation?: Coord; findPath?: boolean }) {
           width={10}
           color={'#00FF00'}
         />
-      </NaverMapView>
-    </View>
+      </StyledNaverMapView>
+    </Container>
   );
 }
+
+const Container = styled.View`
+  align-items: center;
+  width: 100%;
+  height: 100%;
+`;
+
+const CenterMarker = styled.Image`
+  position: absolute;
+  top: 35%;
+  transform: translateY(-28px);
+  align-content: center;
+  width: 20px;
+  height: 32px;
+  z-index: 1;
+`;
+
+const StyledNaverMapView = styled(NaverMapView)`
+  width: 100%;
+  height: 80%;
+`;
 
 export default BanBanMap;
