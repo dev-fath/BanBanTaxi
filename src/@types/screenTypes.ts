@@ -7,6 +7,7 @@ import { RouteProp } from '@react-navigation/native';
 export type RootStackParamList = {
   Home: { findPath: boolean };
   Menu: undefined;
+  Introduce: undefined;
   FindAddressNavigator: undefined;
 };
 

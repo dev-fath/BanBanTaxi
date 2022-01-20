@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AddressState } from '../../redux/maps/addressFindStore';
 import { findSource } from '../../redux/maps/addressFindSlice';
 import { DefaultScreenNavigationProp } from '../../@types/screenTypes';
+import Taxi from '../../../assets/Taxi.png';
 
 const JourneySettingComponent = () => {
   const navigation: DefaultScreenNavigationProp = useNavigation();
@@ -20,6 +21,9 @@ const JourneySettingComponent = () => {
   return (
     <Container>
       <Wrapper>
+        <IntroduceIcon onPress={() => navigation.navigate('Introduce')}>
+          <TaxiImage source={Taxi} />
+        </IntroduceIcon>
         <SourceArea
           onPress={() => {
             dispatch(findSource(true));
@@ -89,6 +93,19 @@ const DestinationArea = styled.TouchableOpacity`
 
 const AreaIcon = styled(Icon)`
   color: ${(props: { highlightColor?: boolean }) => (props.highlightColor ? '#0F0' : '#000')};
+`;
+
+const IntroduceIcon = styled.TouchableWithoutFeedback`
+  position: absolute;
+  right: 0;
+`;
+
+const TaxiImage = styled.Image`
+  position: absolute;
+  right: 0;
+  top: -25px;
+  width: 100px;
+  height: 50px;
 `;
 
 export default JourneySettingComponent;
