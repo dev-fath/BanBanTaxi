@@ -2,12 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 import Styled from 'styled-components/native';
 import Geolocation from 'react-native-geolocation-service';
-interface ILocation {
-  latitude: number;
-  longitude: number;
-}
+import { Coord } from 'react-native-nmap/index';
+
 const CurrentPosition = () => {
-  const [location, setLocation] = useState<ILocation | undefined>(undefined);
+  const [location, setLocation] = useState<Coord | undefined>(undefined);
 
   useEffect(() => {
     Geolocation.getCurrentPosition(
