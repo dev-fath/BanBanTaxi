@@ -6,13 +6,6 @@ interface ILocation {
   latitude: number;
   longitude: number;
 }
-
-const Container = Styled.View`
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-`;
-
 const CurrentPosition = () => {
   const [location, setLocation] = useState<ILocation | undefined>(undefined);
 
@@ -45,5 +38,11 @@ const CurrentPosition = () => {
     </Container>
   );
 };
+
+const Container = Styled.View`
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+`;
 
 export default CurrentPosition;

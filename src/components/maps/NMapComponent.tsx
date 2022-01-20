@@ -3,6 +3,7 @@ import NaverMapView, { Coord, Path } from 'react-native-nmap';
 import { useDispatch, useSelector } from 'react-redux';
 import Geolocation from '@react-native-community/geolocation';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import styled from 'styled-components/native';
 
 import {
   destinationAddressObject,
@@ -15,7 +16,6 @@ import { getDirections, loadReverseGeocode } from '../../services/maps/naverMapA
 import { IAddresses, IReverseGeocodeResponse } from '../../interfaces/geocodeResponse';
 import { AddressState } from '../../redux/maps/addressFindStore';
 import { DefaultScreenNavigationProp } from '../../@types/screenTypes';
-import styled from 'styled-components/native';
 
 function BanBanMap(props: { searchLocation?: Coord; findPath?: boolean }) {
   const navigation: DefaultScreenNavigationProp = useNavigation();

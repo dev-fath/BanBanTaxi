@@ -2,11 +2,11 @@ import React from 'react';
 import { FlatList, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { IAddresses } from '../../interfaces/geocodeResponse';
 import {
   destinationAddressObject,
   destinationPoint,
-  pinPoint,
   sourceAddressObject,
   sourcePoint,
 } from '../../redux/maps/addressFindSlice';

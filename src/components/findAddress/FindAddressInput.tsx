@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, TextInput } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
+
 import { IAddresses } from '../../interfaces/geocodeResponse';
 import { AddressState } from '../../redux/maps/addressFindStore';
 import { findSource } from '../../redux/maps/addressFindSlice';
